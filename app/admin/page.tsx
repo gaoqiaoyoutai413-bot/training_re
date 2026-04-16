@@ -16,9 +16,9 @@ export default function AdminPage() {
         />
         
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <StatCard label="管理課題数" value={`${tasks.length}`} icon={ListChecks} />
-          <StatCard label="アクティブユーザー" value="--" icon={Users} hint="DB同期後に反映" />
-          <StatCard label="現在のバッチ" value="--" icon={Layers} hint="運用中のフェーズ" />
+          <StatCard label="管理課題数" value={`${tasks.length}`} icon={<ListChecks className="h-4 w-4" />} hint="課題マスタから管理できます。" />
+          <StatCard label="アクティブユーザー" value="--" icon={<Users className="h-4 w-4" />} hint="DB同期後に反映" />
+          <StatCard label="現在のバッチ" value="--" icon={<Layers className="h-4 w-4" />} hint="運用中のフェーズ" />
         </div>
       </section>
 
