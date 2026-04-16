@@ -81,6 +81,9 @@ export interface Task {
   learnerActions: string[];
   deliverables: string[];
   businessImpact: string;
+  background?: string;
+  specificIssue?: string;
+  finalGoal?: string;
   recommendedDependencies: TaskDependency[];
   rubricHighlights: string[];
   businessValueChecks: string[];
