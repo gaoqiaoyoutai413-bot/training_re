@@ -19,9 +19,9 @@
 
 この手順書でまだ扱わない範囲:
 
-- 本番 RLS ポリシーの詳細設計
-- Slack API / Gemini API / Google Drive API の実装接続
-- 提出機能・レビュー機能の完全本番化
+- 本番 RLS ポリシーの個別チューニング
+- 物理削除や削除依頼対応の業務フロー設計
+- Google Docs 出力の細かい体裁調整
 
 ## 0. 事前に用意しておくもの
 
@@ -108,6 +108,8 @@ SLACK_REVIEW_CHANNEL=
 GOOGLE_DRIVE_FOLDER_ID=
 GOOGLE_SERVICE_ACCOUNT_EMAIL=
 GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
+EXTERNAL_SUPABASE_URL=
+EXTERNAL_SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 ### 2-3. 今の段階で必須のもの
@@ -127,6 +129,8 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 - `GOOGLE_DRIVE_FOLDER_ID`
 - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
 - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
+- `EXTERNAL_SUPABASE_URL`
+- `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY`
 
 ### 2-4. `.env.local` 作成時の注意
 
@@ -455,7 +459,7 @@ select task_code, title from public.tasks order by task_code;
 
 ## 10. 作業完了のチェックリスト
 
-以下が終わっていれば、この段階のユーザー作業は完了です。
+以下が終わっていれば、この段階の基本作業は完了です。
 
 - Supabase プロジェクトを作成した
 - `.env.local` を作成した
@@ -495,20 +499,18 @@ select task_code, title from public.tasks order by task_code;
 
 ### 12-2. 入力する項目
 
-- 受講生名
-- メールアドレス
 - 対象課題
-- ソースコード URL
-- 証跡ファイルメモ
-- ビジネス価値への考察
+- README / 提出本文
+- モック画像
+- 補足リンク 任意
 
 ### 12-3. 送信後に確認すること
 
 期待する結果:
 
-- 画面上で「提出内容を保存しました」と表示される
+- 画面上で提出保存成功メッセージが表示される
 - Supabase の `public.submissions` に 1 件追加される
-- `public.profiles` に受講生メールが未登録なら自動追加される
+- `public.profiles` に未登録ユーザーならプロフィールが作成される
 
 ### 12-4. Supabase で確認するテーブル
 
@@ -524,11 +526,11 @@ select task_code, title from public.tasks order by task_code;
 ### 12-5. 補足
 
 - 証跡ファイルを選択した場合、`submission-evidence` バケットへ保存されます
-- いま保存されるのは提出メタデータ、証跡ファイル、証跡メモです
+- いま保存されるのは提出メタデータ、README、モック画像などの提出ファイルです
 - `public.submission_files` にファイルパスが記録されます
 - 参考リンクは任意です
 - README 形式の本文が主提出物です
-- コードファイルやコードフォルダを添付すると AI レビュー精度が上がります
+- モック画像は必須です
 
 ### 12-6. 期データを物理的に削除したい場合
 
@@ -549,7 +551,7 @@ select task_code, title from public.tasks order by task_code;
 
 ## 12-7. Google Docs 出力を使いたい場合
 
-管理画面から要件定義書と設計書を Google ドキュメントへ出力できます。
+管理画面から Google ドキュメントへ出力できます。
 
 必要な環境変数:
 
@@ -567,12 +569,19 @@ select task_code, title from public.tasks order by task_code;
 
 - `docs/google-docs-requirements-spec.md`
 - `docs/google-docs-design-spec.md`
+- `docs/internal-brief.md`
 
 実行場所:
 
 - 管理者でログイン
 - `/admin/tasks`
 - `Google Docs 出力` カードから実行
+
+現在出力できる文書:
+
+- 要件定義書
+- 設計書
+- 社内説明用サマリー
 
 ## 13. 現在の動作確認手順
 
@@ -584,6 +593,7 @@ select task_code, title from public.tasks order by task_code;
 - AI 一次レビュー
 - メンター採点
 - ユーザー管理
+- 利用状態管理
 
 ### 13-1. 事前準備
 
@@ -615,8 +625,8 @@ select task_code, title from public.tasks order by task_code;
 
 - 課題を選択する
 - 表示された README テンプレートを参考に本文を書く
-- 必要に応じて証跡ファイルを添付する
-- 必要に応じてコードファイルまたはコードフォルダを添付する
+- モック画像を 1 枚以上添付する
+- 必要に応じて補足リンクを入れる
 - `提出内容を保存する` を押す
 
 確認すること:
@@ -656,6 +666,7 @@ select task_code, title from public.tasks order by task_code;
 - 参考リンクが入力されていれば表示される
 - 証跡ファイル一覧が表示される
 - AI 一次レビューエリアが表示される
+- モック画像タブで提出画像が見える
 
 ### 13-6. AI 一次レビュー確認
 
@@ -713,9 +724,26 @@ select task_code, title from public.tasks order by task_code;
 
 - `profiles` の一覧が表示される
 - 各ユーザーのロールを変更できる
+- 各ユーザーの `利用状態` を `active / inactive / retired` で変更できる
 - 変更後に再ログインすると権限が反映される
 
-### 13-9. 確認用 SQL
+### 13-9. 利用状態管理確認
+
+前提:
+
+- 対象ユーザーの `profiles.role` が `admin`
+
+やること:
+
+- `/admin/learners` で任意ユーザーの `利用状態` を `inactive` または `retired` に変更する
+- 対象ユーザーで再ログインを試す
+
+確認すること:
+
+- inactive / retired のユーザーはログインできない
+- 既存の提出履歴やレビュー履歴は保持される
+
+### 13-10. 確認用 SQL
 
 ユーザー一覧:
 
@@ -749,13 +777,36 @@ from public.mentor_reviews
 order by reviewed_at desc;
 ```
 
+利用状態:
+
+```sql
+select email, role, account_status
+from public.profiles
+order by created_at desc;
+```
+
 ## 14. 次にやること
 
 現時点で、基本運用フローは一通り動きます。
 
 次に進める候補は以下です。
 
-### 14-1. 優先度高: 課題管理を本番化する
+### 14-1. 優先度高: 合格 / 差し戻し通知の最終整理
+
+やること:
+
+- レビュー用チャンネル通知の文面調整
+- student DM 文面の最終調整
+- 既存通知と運用ポリシーの完全一致
+
+### 14-2. 優先度高: 削除依頼対応フローの整理
+
+やること:
+
+- admin が個別対応する運用手順を文書化
+- 論理削除と非公開化の切り分けを整理
+
+### 14-3. 優先度中: 課題管理を本番化する
 
 対象:
 
@@ -770,7 +821,7 @@ order by reviewed_at desc;
 
 を管理画面から編集できるようにする
 
-### 14-2. 優先度高: Supabase RLS を入れる
+### 14-4. 優先度中: Supabase RLS のチューニング
 
 やること:
 
@@ -780,7 +831,7 @@ order by reviewed_at desc;
 
 ように DB 側でも制御する
 
-### 14-3. 優先度中: AIレビューの精度を上げる
+### 14-5. 優先度中: AIレビューの精度を上げる
 
 やること:
 
@@ -788,7 +839,14 @@ order by reviewed_at desc;
 - 課題カテゴリ別の観点差分を増やす
 - コードファイルの優先順位付けを改善する
 
-### 14-4. 優先度中: zip 展開対応
+### 14-6. 優先度中: ナレッジ共有の運用整備
+
+やること:
+
+- 公開可否の判断基準を文書化
+- README / メンターコメント / モック画像の公開品質をそろえる
+
+### 14-7. 優先度低: zip 展開対応
 
 今はフォルダ提出や単一ファイル提出が AI に向いています。
 
@@ -799,23 +857,6 @@ order by reviewed_at desc;
 - 主要コードだけ抽出する
 
 にも対応できます。
-
-### 14-5. 優先度中: Slack 通知
-
-やること:
-
-- 提出完了時
-- AIレビュー完了時
-- 差し戻し時
-
-に Slack 通知を飛ばす
-
-### 14-6. 優先度中: ナレッジ共有の本番化
-
-やること:
-
-- 合格済み提出からナレッジ公開する
-- README と証跡をライブラリ化する
 
 ## 15. Storage アクセス制御の反映
 
@@ -840,22 +881,22 @@ order by reviewed_at desc;
 
 ## 16. 担当メンター機能の反映
 
-提出ごとに担当メンターを持てるようにしています。メンター側で `自分を担当にする` を押すと、一覧の `自分の担当だけ見る` と連動します。
+受講生単位で担当メンターを持てるようにしています。管理画面ではなく、`担当設定` ページから割り当てます。
 
 やること:
 
 1. Supabase の `SQL Editor` を開く
-2. [0006_add_assigned_mentor_to_submissions.sql](../supabase/migrations/0006_add_assigned_mentor_to_submissions.sql) を実行する
+2. [0007_add_assigned_mentor_to_profiles.sql](../supabase/migrations/0007_add_assigned_mentor_to_profiles.sql) を実行する
 
 確認ポイント:
 
 - `http://127.0.0.1:3000/submissions`
   自分の提出一覧が見える
-- `http://127.0.0.1:3000/mentor/reviews`
-  受講生名で検索できる
-- `http://127.0.0.1:3000/mentor/reviews/<submissionId>`
-  `自分を担当にする` を押せる
-- 一覧へ戻って `自分の担当だけ見る` をオンにすると、担当化した提出だけが残る
+- `http://127.0.0.1:3000/mentor/assignments`
+  受講生一覧が出る
+- mentor は `自分を担当にする / 担当を外す` ができる
+- admin は任意 mentor を設定 / 解除できる
+- 担当設定後、`提出レビュー` の `自分の担当だけ見る` で絞り込める
 
 ## 17. 導線の見え方
 
@@ -864,14 +905,14 @@ order by reviewed_at desc;
 - 受講生:
   `課題一覧` → `課題提出` → `提出状況`
 - メンター:
-  `提出レビュー`
-  一覧で検索、担当化、詳細確認、採点まで進める
+  `提出レビュー` と `担当設定`
+  `担当設定` で受講生単位の担当を決め、`提出レビュー` で検索・採点を行う
 - 管理者:
   `提出レビュー`、`課題管理`、`ユーザー管理`
 
 補足:
 
-- `提出レビュー` 一覧から `自分を担当にする` を押せます
+- 担当設定は `提出レビュー` ではなく `担当設定` 画面で行います
 - 受講生は `提出状況` で AIレビューとメンター評価を追えます
 
 ## 18. Slack 通知の確認
@@ -880,13 +921,15 @@ Slack 通知は次のタイミングで送られます。
 
 - 提出完了時
 - AIレビュー完了時
-- メンター評価保存時
+- 合格時 / 差し戻し時のレビュー用チャンネル通知
+- メンター評価完了時 / 合格時 / 差し戻し時の student DM
 
 事前確認:
 
 1. `.env.local` に `SLACK_BOT_TOKEN` と `SLACK_REVIEW_CHANNEL` が入っている
 2. Bot が対象チャンネルに招待されている
 3. Bot に `chat:write` が付与されている
+4. 外部 Supabase の `members.email -> slack_id` が参照できる
 
 確認手順:
 
@@ -895,15 +938,33 @@ Slack 通知は次のタイミングで送られます。
 3. 提出詳細で `AIレビューを実行` する
 4. Slack に `AI一次レビューが完了しました` が届く
 5. メンター評価を保存する
-6. Slack に `メンター評価が登録されました` が届く
+6. レビュー用チャンネルに評価通知が届く
+7. 対象 student に DM が届く
 
 うまく届かない場合:
 
 - `SLACK_REVIEW_CHANNEL` はチャンネル ID を使うのが安全
 - Bot がチャンネルに入っていないと送れない
+- DM が届かない場合は、外部 Supabase の `members.slack_id` が正しいか確認する
 - 通知失敗でも提出やレビュー保存自体は止まらない
 
-## 19. おすすめの次の進め方
+## 19. 利用状態管理 migration の反映
+
+退職者や一時停止ユーザーをログイン不可にしつつ、履歴は残すための migration です。
+
+やること:
+
+1. Supabase の `SQL Editor` を開く
+2. [0010_add_profile_account_status.sql](../supabase/migrations/0010_add_profile_account_status.sql) を実行する
+
+確認ポイント:
+
+- `public.profiles.account_status` 列が追加されている
+- `/admin/learners` に `利用状態` 列が表示される
+- `inactive` または `retired` にしたユーザーがログインできない
+- 提出履歴やレビュー履歴は残る
+
+## 20. おすすめの次の進め方
 
 迷う場合は、次の順がおすすめです。
 

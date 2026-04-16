@@ -3,17 +3,29 @@
 import { useState, useTransition } from "react";
 import { useAuth } from "@/components/auth-provider";
 
-export function MentorReviewForm({ submissionId }: { submissionId: string }) {
+export function MentorReviewForm({
+  submissionId,
+  submissionUserId,
+}: {
+  submissionId: string;
+  submissionUserId?: string;
+}) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const { profile, session } = useAuth();
+  const isSelfSubmission = Boolean(profile?.id && submissionUserId && profile.id === submissionUserId);
 
   return (
     <form
       className="panel rounded-[30px] p-5"
       onSubmit={(event) => {
         event.preventDefault();
+        if (isSelfSubmission) {
+          setError("自分の提出に対してレビューはできません。別のメンターまたは管理者が評価してください。");
+          setMessage("");
+          return;
+        }
         setMessage("");
         setError("");
         const form = event.currentTarget;
@@ -49,12 +61,18 @@ export function MentorReviewForm({ submissionId }: { submissionId: string }) {
     >
       <div className="eyebrow text-xs text-slate-500">レビュー入力</div>
       <h3 className="mt-2 text-xl font-semibold text-[var(--navy)]">メンター採点を登録する</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600">最終判定はメンターが行います。AIレビューは参考情報として扱ってください。</p>
 
       <div className="mt-4 grid gap-3 xl:grid-cols-2">
         <div className="rounded-[20px] bg-white/80 p-4 text-sm leading-5 text-slate-600 md:col-span-2">
           レビュー担当: <span className="font-medium text-[var(--navy)]">{profile?.name ?? "未ログイン"}</span>
           <span className="ml-2 text-xs text-slate-500">{profile?.email}</span>
         </div>
+        {isSelfSubmission ? (
+          <div className="rounded-[20px] bg-[var(--warning-soft)] p-4 text-sm leading-6 text-[var(--warning)] md:col-span-2">
+            自分の提出に対してはレビューできません。別のメンターまたは管理者が採点してください。
+          </div>
+        ) : null}
 
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">技術点</span>
@@ -108,7 +126,7 @@ export function MentorReviewForm({ submissionId }: { submissionId: string }) {
       <div className="mt-4">
         <button
           className="rounded-full bg-[var(--navy)] px-6 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isPending || !profile || !session?.access_token}
+          disabled={isPending || !profile || !session?.access_token || isSelfSubmission}
           type="submit"
         >
           {isPending ? "レビューを保存中..." : "レビューを保存する"}

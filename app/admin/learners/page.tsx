@@ -9,7 +9,7 @@ export default function AdminLearnersPage() {
         <SectionHeading
           eyebrow="ユーザー管理"
           title="ログイン済みユーザーのロールと学習状況を管理する"
-          description="profiles と submissions をもとに、管理者がユーザー権限を更新できる画面です。"
+          description="profiles と submissions をもとに、管理者がロール、利用状態、学習状況を管理できる画面です。退職や停止は物理削除ではなく利用状態で制御します。"
         />
         <AdminUserManagement />
       </section>

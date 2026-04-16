@@ -1,4 +1,5 @@
 export type UserRole = "student" | "mentor" | "admin";
+export type AccountStatus = "active" | "inactive" | "retired";
 export type TaskCategory =
   | "internal_ops"
   | "customer_engagement"
@@ -128,6 +129,7 @@ export interface LearnerSnapshot {
   email: string;
   batchCode: string | null;
   role: UserRole;
+  accountStatus?: AccountStatus;
   assignedMentorId?: string | null;
   assignedMentorName?: string | null;
   submissionCount?: number;

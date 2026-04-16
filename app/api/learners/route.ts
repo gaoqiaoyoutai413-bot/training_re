@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getLearnerSnapshots } from "@/lib/learner-repository";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import type { UserRole } from "@/types/domain";
+import type { AccountStatus, UserRole } from "@/types/domain";
 
 export async function GET(request: Request) {
   const authorized = await getAuthorizedProfile(request, ["admin"]);
@@ -28,19 +28,41 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ message: "Supabase 接続情報が不足しています。" }, { status: 500 });
   }
 
-  const body = (await request.json()) as { userId?: string; role?: UserRole };
+  const body = (await request.json()) as { userId?: string; role?: UserRole; accountStatus?: AccountStatus };
   const userId = String(body.userId ?? "").trim();
   const role = body.role;
+  const accountStatus = body.accountStatus;
 
-  if (!userId || !role || !["student", "mentor", "admin"].includes(role)) {
+  if (!userId) {
     return NextResponse.json({ message: "更新内容が不正です。" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
+  const updates: { role?: UserRole; account_status?: AccountStatus; is_active?: boolean } = {};
 
-  if (error) {
-    return NextResponse.json({ message: "ロール更新に失敗しました。" }, { status: 500 });
+  if (role) {
+    if (!["student", "mentor", "admin"].includes(role)) {
+      return NextResponse.json({ message: "ロール更新内容が不正です。" }, { status: 400 });
+    }
+    updates.role = role;
   }
 
-  return NextResponse.json({ message: "ロールを更新しました。" });
+  if (accountStatus) {
+    if (!["active", "inactive", "retired"].includes(accountStatus)) {
+      return NextResponse.json({ message: "利用状態が不正です。" }, { status: 400 });
+    }
+    updates.account_status = accountStatus;
+    updates.is_active = accountStatus === "active";
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ message: "更新対象がありません。" }, { status: 400 });
+  }
+
+  const { error } = await supabase.from("profiles").update(updates).eq("id", userId);
+
+  if (error) {
+    return NextResponse.json({ message: "ユーザー更新に失敗しました。" }, { status: 500 });
+  }
+
+  return NextResponse.json({ message: "ユーザー情報を更新しました。" });
 }

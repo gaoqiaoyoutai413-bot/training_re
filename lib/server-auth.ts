@@ -23,12 +23,16 @@ export async function getAuthorizedProfile(request: Request, allowedRoles: UserR
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id, email, name, role")
+    .select("id, email, name, role, is_active, account_status")
     .eq("email", authUser.user.email.toLowerCase())
     .maybeSingle();
 
   if (profileError || !profile) {
     return { error: "プロフィール情報が見つかりません。", status: 403 as const, profile: null };
+  }
+
+  if (profile.is_active === false || (profile.account_status && profile.account_status !== "active")) {
+    return { error: "このアカウントは現在利用停止中です。管理者へお問い合わせください。", status: 403 as const, profile: null };
   }
 
   if (!allowedRoles.includes(profile.role as UserRole)) {

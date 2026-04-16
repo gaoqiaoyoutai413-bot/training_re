@@ -55,6 +55,7 @@ export function AiReviewPanel({
           <p className="mt-1 text-sm leading-5 text-slate-600">
             課題 rubric と提出内容をもとに、セキュリティ・可読性・ビジネス価値の3観点で一次レビューします。
           </p>
+          <p className="mt-2 text-xs leading-5 text-slate-500">AIレビューは参考情報です。合格・差し戻しの最終判定はメンターが行います。</p>
         </div>
         <button
           className="rounded-full bg-[var(--navy)] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
@@ -119,6 +120,9 @@ export function AiReviewPanel({
             <div className="rounded-[20px] bg-white/80 p-4 text-sm leading-6 text-slate-600">
               <div className="font-medium text-[var(--navy)]">要約</div>
               <div className="mt-2">{review.summary}</div>
+              <div className="mt-3 rounded-[16px] bg-[var(--sand)] px-4 py-3 text-xs leading-5 text-slate-600">
+                この内容はレビュー補助です。評価確定や合否判定はメンターが判断します。
+              </div>
               <div className="mt-3 text-xs text-slate-500">
                 モデル: {review.modelName} / Prompt: {review.promptVersion} / 実行日時: {formatMonthDay(review.reviewedAt)}
               </div>
@@ -181,7 +185,7 @@ export function AiReviewPanel({
         </>
       ) : (
         <div className="mt-4 rounded-[20px] bg-white/80 p-4 text-sm text-slate-600">
-          まだ AIレビューは実行されていません。提出内容を保存したあと、この画面から一次レビューを開始できます。
+          まだ AIレビューは実行されていません。提出内容を保存したあと、この画面から一次レビューを開始できます。AIレビューは参考情報であり、最終判定はメンターが行います。
         </div>
       )}
     </section>

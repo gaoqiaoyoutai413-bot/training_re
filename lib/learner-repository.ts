@@ -7,6 +7,7 @@ interface ProfileRow {
   email: string;
   name: string;
   role: LearnerSnapshot["role"];
+  account_status?: LearnerSnapshot["accountStatus"];
   assigned_mentor_id?: string | null;
 }
 
@@ -53,7 +54,7 @@ export async function getLearnerSnapshots(): Promise<LearnerSnapshot[]> {
   }
 
   const [{ data: profiles, error: profilesError }, { data: submissions }] = await Promise.all([
-    supabase.from("profiles").select("id, email, name, role, assigned_mentor_id").order("created_at", { ascending: true }),
+    supabase.from("profiles").select("id, email, name, role, account_status, assigned_mentor_id").order("created_at", { ascending: true }),
     supabase
       .from("submissions")
       .select("user_id, status, tasks(automation_weight, ai_weight, integration_weight)")
@@ -114,6 +115,7 @@ export async function getLearnerSnapshots(): Promise<LearnerSnapshot[]> {
       email: profile.email,
       batchCode: null,
       role: profile.role,
+      accountStatus: profile.account_status ?? "active",
       assignedMentorId: profile.assigned_mentor_id ?? null,
       assignedMentorName: null,
       submissionCount: stats.submissionCount,

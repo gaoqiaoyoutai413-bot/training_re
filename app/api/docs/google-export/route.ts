@@ -9,10 +9,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: authorized.error }, { status: authorized.status });
   }
 
-  const body = (await request.json()) as { target?: "requirements" | "design" };
+  const body = (await request.json()) as { target?: "requirements" | "design" | "brief" };
   const target = body.target;
 
-  if (target !== "requirements" && target !== "design") {
+  if (target !== "requirements" && target !== "design" && target !== "brief") {
     return NextResponse.json({ message: "出力対象が不正です。" }, { status: 400 });
   }
 

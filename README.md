@@ -1,7 +1,7 @@
 # Tech-Quest
 
 IT コンサル新人研修向けの、課題提出・レビュー・ナレッジ共有プラットフォームです。  
-現在のシステムは、`課題管理`、`README 中心の提出`、`AI 一次レビュー`、`メンター評価`、`担当設定`、`匿名ナレッジ公開`、`Slack 通知`、`Google Docs 出力` までを一つにまとめています。
+現在のシステムは、`課題管理`、`README 中心の提出`、`AI 一次レビュー`、`メンター評価`、`担当設定`、`匿名ナレッジ公開`、`Slack 通知`、`Google Docs 出力`、`利用状態管理` までを一つにまとめています。
 
 ## この README で分かること
 
@@ -13,6 +13,8 @@ IT コンサル新人研修向けの、課題提出・レビュー・ナレッ�
 ## まず読むドキュメント
 
 - [社内説明用サマリー](docs/internal-brief.md)
+- [最終運用ポリシー](docs/final-operational-policy.md)
+- [最終運用ポリシー 実装反映チェック](docs/policy-implementation-check.md)
 - [システム機能概要](docs/system-feature-overview.md)
 - [システム構成](docs/system-structure.md)
 - [ロール別にできること](docs/role-capabilities.md)
@@ -27,10 +29,12 @@ Tech-Quest は、次の運用を一連で扱えます。
 4. メンターが採点する
 5. 合格提出を匿名ナレッジとして公開する
 6. 要件定義書や設計書を Google Docs に出力する
+7. 社内説明用サマリーを Google Docs に出力する
 
 ## 主要機能
 
 - Google ログインとロール管理
+- 利用状態管理 `active / inactive / retired`
 - 課題一覧 / 課題詳細
 - README + モック画像を中心とした提出
 - AI 一次レビュー
@@ -90,6 +94,8 @@ flowchart LR
 ### システム理解
 
 - [社内説明用サマリー](docs/internal-brief.md)
+- [最終運用ポリシー](docs/final-operational-policy.md)
+- [最終運用ポリシー 実装反映チェック](docs/policy-implementation-check.md)
 - [システム機能概要](docs/system-feature-overview.md)
 - [システム構成](docs/system-structure.md)
 - [ロール別にできること](docs/role-capabilities.md)
@@ -106,6 +112,7 @@ flowchart LR
 
 - [Google Docs 用 要件定義書](docs/google-docs-requirements-spec.md)
 - [Google Docs 用 設計書](docs/google-docs-design-spec.md)
+- [Google Docs 用 社内説明サマリー](docs/internal-brief.md)
 
 ### セットアップ・運用
 

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { getSlackIdByEmail } from "@/lib/member-directory";
 import { mentorQueue } from "@/lib/mock-data";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { getSubmissionList } from "@/lib/submission-repository";
-import { sendMentorReviewedSlackNotification } from "@/lib/slack-notify";
+import { sendMentorReviewedDirectMessage, sendMentorReviewedSlackNotification } from "@/lib/slack-notify";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
@@ -67,13 +68,17 @@ export async function POST(request: Request) {
   const { data: submission, error: submissionError } = await supabase
     .from("submissions")
     .select(
-      "id, review_task:tasks!submissions_task_id_fkey(task_code, title), learner_profile:profiles!submissions_user_id_fkey(name)",
+      "id, user_id, review_task:tasks!submissions_task_id_fkey(task_code, title), learner_profile:profiles!submissions_user_id_fkey(name, email)",
     )
     .eq("id", submissionId)
     .maybeSingle();
 
   if (submissionError || !submission) {
     return NextResponse.json({ message: "対象の提出が見つかりません。" }, { status: 404 });
+  }
+
+  if (submission.user_id === authorized.profile.id) {
+    return NextResponse.json({ message: "自分の提出に対してレビューはできません。" }, { status: 403 });
   }
 
   const { error: reviewUpsertError } = await supabase.from("mentor_reviews").upsert(
@@ -114,6 +119,22 @@ export async function POST(request: Request) {
       technicalScore,
       businessScore,
     });
+
+    if (profile?.email) {
+      const slackId = await getSlackIdByEmail(profile.email);
+
+      if (slackId) {
+        await sendMentorReviewedDirectMessage({
+          userSlackId: slackId,
+          taskCode: task?.task_code ?? "UNKNOWN",
+          taskTitle: task?.title ?? null,
+          reviewerName: authorized.profile.name,
+          result: result as "passed" | "rework_requested",
+          technicalScore,
+          businessScore,
+        });
+      }
+    }
   } catch (error) {
     console.error("Slack notification failed after mentor review:", error);
   }

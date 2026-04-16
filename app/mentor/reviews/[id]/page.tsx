@@ -140,7 +140,7 @@ export default async function MentorReviewDetailPage({
           ) : draft ? (
             <ReviewScoreCard draft={draft} submission={submission} />
           ) : (
-            <MentorReviewForm submissionId={submission.id} />
+            <MentorReviewForm submissionId={submission.id} submissionUserId={submission.userId} />
           )}
         </section>
       </div>

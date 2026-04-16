@@ -19,20 +19,11 @@ function buildText(payload: SlackNotifyPayload) {
   return [payload.title, ...payload.bodyLines].join("\n");
 }
 
-export async function sendSlackNotification(payload: SlackNotifyPayload) {
-  const config = getSlackConfig();
-
-  if (!config) {
-    return { ok: false as const, skipped: true as const, reason: "Slack 設定が未入力です。" };
-  }
-
-  const channel = payload.channel ?? config.reviewChannel;
-  const text = buildText(payload);
-
+async function postMessageToSlack(channel: string, text: string, botToken: string) {
   const response = await fetch("https://slack.com/api/chat.postMessage", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${config.botToken}`,
+      Authorization: `Bearer ${botToken}`,
       "Content-Type": "application/json; charset=utf-8",
     },
     body: JSON.stringify({
@@ -47,6 +38,60 @@ export async function sendSlackNotification(payload: SlackNotifyPayload) {
   if (!response.ok || !result.ok) {
     throw new Error(result.error ?? "Slack 通知に失敗しました。");
   }
+}
+
+async function openDirectMessageChannel(userSlackId: string, botToken: string) {
+  const response = await fetch("https://slack.com/api/conversations.open", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${botToken}`,
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify({
+      users: userSlackId,
+    }),
+  });
+
+  const result = (await response.json()) as {
+    ok?: boolean;
+    error?: string;
+    channel?: { id?: string };
+  };
+
+  if (!response.ok || !result.ok || !result.channel?.id) {
+    throw new Error(result.error ?? "Slack DM チャンネルの作成に失敗しました。");
+  }
+
+  return result.channel.id;
+}
+
+export async function sendSlackNotification(payload: SlackNotifyPayload) {
+  const config = getSlackConfig();
+
+  if (!config) {
+    return { ok: false as const, skipped: true as const, reason: "Slack 設定が未入力です。" };
+  }
+
+  const channel = payload.channel ?? config.reviewChannel;
+  const text = buildText(payload);
+  await postMessageToSlack(channel, text, config.botToken);
+
+  return { ok: true as const, skipped: false as const };
+}
+
+export async function sendSlackDirectMessage(userSlackId: string, payload: Omit<SlackNotifyPayload, "channel">) {
+  const config = getSlackConfig();
+
+  if (!config) {
+    return { ok: false as const, skipped: true as const, reason: "Slack 設定が未入力です。" };
+  }
+
+  if (!userSlackId.trim()) {
+    return { ok: false as const, skipped: true as const, reason: "Slack ID が未設定です。" };
+  }
+
+  const dmChannelId = await openDirectMessageChannel(userSlackId, config.botToken);
+  await postMessageToSlack(dmChannelId, buildText(payload), config.botToken);
 
   return { ok: true as const, skipped: false as const };
 }
@@ -106,6 +151,29 @@ export async function sendMentorReviewedSlackNotification(input: {
       `レビュー担当: ${input.reviewerName}`,
       `技術点: ${input.technicalScore} / 5`,
       `ビジネス点: ${input.businessScore} / 5`,
+    ],
+  });
+}
+
+export async function sendMentorReviewedDirectMessage(input: {
+  userSlackId: string;
+  taskCode: string;
+  taskTitle?: string | null;
+  reviewerName: string;
+  result: "passed" | "rework_requested";
+  technicalScore: number;
+  businessScore: number;
+}) {
+  const resultLabel = input.result === "passed" ? "合格" : "差し戻し";
+
+  return sendSlackDirectMessage(input.userSlackId, {
+    title: `提出の評価が返却されました: ${resultLabel}`,
+    bodyLines: [
+      `課題: ${input.taskTitle ?? input.taskCode} (${input.taskCode})`,
+      `レビュー担当: ${input.reviewerName}`,
+      `技術点: ${input.technicalScore} / 5`,
+      `ビジネス点: ${input.businessScore} / 5`,
+      "詳細はシステムの提出状況から確認してください。",
     ],
   });
 }

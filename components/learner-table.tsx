@@ -1,14 +1,16 @@
- "use client";
+"use client";
 
-import type { LearnerSnapshot, UserRole } from "@/types/domain";
+import type { AccountStatus, LearnerSnapshot, UserRole } from "@/types/domain";
 
 export function LearnerTable({
   learners,
   onRoleChange,
+  onAccountStatusChange,
   updatingUserId,
 }: {
   learners: LearnerSnapshot[];
   onRoleChange?: (userId: string, role: UserRole) => void;
+  onAccountStatusChange?: (userId: string, status: AccountStatus) => void;
   updatingUserId?: string | null;
 }) {
   if (learners.length === 0) {
@@ -26,6 +28,7 @@ export function LearnerTable({
           <tr>
             <th className="px-5 py-4">ユーザー</th>
             <th className="px-5 py-4">ロール</th>
+            <th className="px-5 py-4">利用状態</th>
             <th className="px-5 py-4">完了課題</th>
             <th className="px-5 py-4">レビュー中</th>
             <th className="px-5 py-4">スキル傾向</th>
@@ -55,6 +58,24 @@ export function LearnerTable({
                   </select>
                 ) : (
                   learner.role
+                )}
+              </td>
+              <td className="px-5 py-4">
+                {onAccountStatusChange ? (
+                  <select
+                    className="rounded-full border border-black/10 bg-white px-3 py-2 text-xs text-slate-700 outline-none disabled:opacity-60"
+                    disabled={updatingUserId === learner.id}
+                    onChange={(event) => {
+                      onAccountStatusChange(learner.id, event.target.value as AccountStatus);
+                    }}
+                    value={learner.accountStatus ?? "active"}
+                  >
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                    <option value="retired">retired</option>
+                  </select>
+                ) : (
+                  learner.accountStatus ?? "active"
                 )}
               </td>
               <td className="px-5 py-4">{learner.completedTasks} / 10</td>

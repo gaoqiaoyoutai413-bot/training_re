@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   const { data: existingByEmail, error: fetchError } = await supabase
     .from("profiles")
-    .select("id, email, name, role")
+    .select("id, email, name, role, is_active, account_status")
     .eq("email", email)
     .maybeSingle();
 
@@ -34,6 +34,10 @@ export async function POST(request: Request) {
   }
 
   if (existingByEmail) {
+    if (existingByEmail.is_active === false || (existingByEmail.account_status && existingByEmail.account_status !== "active")) {
+      return NextResponse.json({ message: "このアカウントは現在利用停止中です。管理者へお問い合わせください。" }, { status: 403 });
+    }
+
     const { error: updateError } = await supabase.from("profiles").update({ name }).eq("id", existingByEmail.id);
 
     if (updateError) {
@@ -58,6 +62,7 @@ export async function POST(request: Request) {
       email,
       name,
       role: "student",
+      account_status: "active",
     })
     .select("id, email, name, role")
     .single();

@@ -6,6 +6,7 @@ import { useAuth } from "@/components/auth-provider";
 type ExportState = {
   requirements?: string | null;
   design?: string | null;
+  brief?: string | null;
 };
 
 export function GoogleDocsExportCard() {
@@ -15,7 +16,7 @@ export function GoogleDocsExportCard() {
   const [message, setMessage] = useState("");
   const [links, setLinks] = useState<ExportState>({});
 
-  const runExport = (target: "requirements" | "design") => {
+  const runExport = (target: "requirements" | "design" | "brief") => {
     if (!session?.access_token) {
       setError("ログイン情報を確認できません。");
       return;
@@ -49,12 +50,12 @@ export function GoogleDocsExportCard() {
   return (
     <section className="panel rounded-[30px] p-5">
       <div className="eyebrow text-xs text-slate-500">Google Docs 出力</div>
-      <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">要件定義書と設計書を Google ドキュメントへ出す</h3>
+      <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">整形済みの社内共有資料を Google ドキュメントへ出す</h3>
       <p className="mt-2 text-sm leading-6 text-slate-600">
         リポジトリ内の整理済み Markdown をもとに、見出しと箇条書きを整えた Google ドキュメントを Google Drive 上へ生成します。
       </p>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
         <button
           className="rounded-[20px] bg-[var(--navy)] px-5 py-4 text-left text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
           disabled={isPending}
@@ -73,6 +74,15 @@ export function GoogleDocsExportCard() {
           <div>設計書を出力</div>
           <div className="mt-1 text-xs text-slate-500">画面、認証、データモデル、API の整理版を出力します。</div>
         </button>
+        <button
+          className="rounded-[20px] border border-black/10 px-5 py-4 text-left text-sm font-medium text-slate-700 transition hover:bg-white disabled:opacity-60"
+          disabled={isPending}
+          onClick={() => runExport("brief")}
+          type="button"
+        >
+          <div>社内説明用サマリーを出力</div>
+          <div className="mt-1 text-xs text-slate-500">概要、良さ、対象者、構成を短く共有する資料を出力します。</div>
+        </button>
       </div>
 
       {links.requirements ? (
@@ -83,6 +93,11 @@ export function GoogleDocsExportCard() {
       {links.design ? (
         <a className="mt-2 block text-sm text-[var(--accent-ink)] underline-offset-4 hover:underline" href={links.design} rel="noreferrer" target="_blank">
           設計書を開く
+        </a>
+      ) : null}
+      {links.brief ? (
+        <a className="mt-2 block text-sm text-[var(--accent-ink)] underline-offset-4 hover:underline" href={links.brief} rel="noreferrer" target="_blank">
+          社内説明用サマリーを開く
         </a>
       ) : null}
 

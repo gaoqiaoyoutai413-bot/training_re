@@ -2,7 +2,7 @@ import { createSign } from "crypto";
 import { readFile } from "fs/promises";
 import path from "path";
 
-type ExportTarget = "requirements" | "design";
+type ExportTarget = "requirements" | "design" | "brief";
 
 type GoogleAccessTokenResponse = {
   access_token: string;
@@ -182,7 +182,9 @@ function toNamedStyleType(level: 1 | 2 | 3) {
 }
 
 function buildDocumentTitle(target: ExportTarget) {
-  return target === "requirements" ? "Tech-Quest 要件定義書" : "Tech-Quest 設計書";
+  if (target === "requirements") return "Tech-Quest 要件定義書";
+  if (target === "design") return "Tech-Quest 設計書";
+  return "Tech-Quest 社内説明用サマリー";
 }
 
 async function createGoogleDocument(title: string, accessToken: string, folderId?: string) {
@@ -359,6 +361,10 @@ function getTargetFilePath(target: ExportTarget) {
     return path.join(process.cwd(), "docs", "google-docs-requirements-spec.md");
   }
 
+  if (target === "brief") {
+    return path.join(process.cwd(), "docs", "internal-brief.md");
+  }
+
   return path.join(process.cwd(), "docs", "google-docs-design-spec.md");
 }
 
@@ -371,7 +377,9 @@ function getTargetTitle(target: ExportTarget) {
 
   return target === "requirements"
     ? `Tech-Quest 要件定義書 ${suffix}`
-    : `Tech-Quest 設計書 ${suffix}`;
+    : target === "design"
+      ? `Tech-Quest 設計書 ${suffix}`
+      : `Tech-Quest 社内説明用サマリー ${suffix}`;
 }
 
 export async function exportMarkdownDocToGoogleDocs(target: ExportTarget) {
