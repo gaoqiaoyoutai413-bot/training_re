@@ -12,10 +12,10 @@ IT コンサル新人研修向けの、課題提出・レビュー・ナレッ�
 
 ## まず読むドキュメント
 
-- [社内説明用サマリー](/Users/yuta/vexum/internal%20system/training/docs/internal-brief.md)
-- [システム機能概要](/Users/yuta/vexum/internal%20system/training/docs/system-feature-overview.md)
-- [システム構成](/Users/yuta/vexum/internal%20system/training/docs/system-structure.md)
-- [ロール別にできること](/Users/yuta/vexum/internal%20system/training/docs/role-capabilities.md)
+- [社内説明用サマリー](docs/internal-brief.md)
+- [システム機能概要](docs/system-feature-overview.md)
+- [システム構成](docs/system-structure.md)
+- [ロール別にできること](docs/role-capabilities.md)
 
 ## システムの現在地
 
@@ -58,7 +58,7 @@ flowchart LR
     N --> GD
 ```
 
-詳しくは [システム構成](/Users/yuta/vexum/internal%20system/training/docs/system-structure.md) を参照してください。
+詳しくは [システム構成](docs/system-structure.md) を参照してください。
 
 ## ロール別の考え方
 
@@ -83,34 +83,34 @@ flowchart LR
 - 担当設定管理
 - Google Docs 出力
 
-詳しくは [ロール別にできること](/Users/yuta/vexum/internal%20system/training/docs/role-capabilities.md) を参照してください。
+詳しくは [ロール別にできること](docs/role-capabilities.md) を参照してください。
 
 ## ドキュメント一覧
 
 ### システム理解
 
-- [社内説明用サマリー](/Users/yuta/vexum/internal%20system/training/docs/internal-brief.md)
-- [システム機能概要](/Users/yuta/vexum/internal%20system/training/docs/system-feature-overview.md)
-- [システム構成](/Users/yuta/vexum/internal%20system/training/docs/system-structure.md)
-- [ロール別にできること](/Users/yuta/vexum/internal%20system/training/docs/role-capabilities.md)
+- [社内説明用サマリー](docs/internal-brief.md)
+- [システム機能概要](docs/system-feature-overview.md)
+- [システム構成](docs/system-structure.md)
+- [ロール別にできること](docs/role-capabilities.md)
 
 ### 設計・仕様
 
-- [アーキテクチャ設計](/Users/yuta/vexum/internal%20system/training/docs/architecture.md)
-- [データモデル](/Users/yuta/vexum/internal%20system/training/docs/data-model.md)
-- [API リファレンス](/Users/yuta/vexum/internal%20system/training/docs/api-reference.md)
-- [AI レビュー設計](/Users/yuta/vexum/internal%20system/training/docs/ai-review-prompting.md)
-- [性能とリスク](/Users/yuta/vexum/internal%20system/training/docs/performance-and-risks.md)
+- [アーキテクチャ設計](docs/architecture.md)
+- [データモデル](docs/data-model.md)
+- [API リファレンス](docs/api-reference.md)
+- [AI レビュー設計](docs/ai-review-prompting.md)
+- [性能とリスク](docs/performance-and-risks.md)
 
 ### Google Docs 出力元
 
-- [Google Docs 用 要件定義書](/Users/yuta/vexum/internal%20system/training/docs/google-docs-requirements-spec.md)
-- [Google Docs 用 設計書](/Users/yuta/vexum/internal%20system/training/docs/google-docs-design-spec.md)
+- [Google Docs 用 要件定義書](docs/google-docs-requirements-spec.md)
+- [Google Docs 用 設計書](docs/google-docs-design-spec.md)
 
 ### セットアップ・運用
 
-- [セットアップ手順](/Users/yuta/vexum/internal%20system/training/docs/setup.md)
-- [詳細手順書](/Users/yuta/vexum/internal%20system/training/docs/user-setup-handbook.md)
+- [セットアップ手順](docs/setup.md)
+- [詳細手順書](docs/user-setup-handbook.md)
 
 ## リポジトリ構成
 

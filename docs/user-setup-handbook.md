@@ -89,7 +89,7 @@ Supabase ダッシュボードで以下を控えてください。
 
 参照ファイル:
 
-- [.env.example](/Users/yuta/vexum/internal%20system/training/.env.example)
+- [.env.example](../.env.example)
 
 ### 2-2. `.env.local` を作る
 
@@ -150,7 +150,7 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 
 対象ファイル:
 
-- [supabase/migrations/0001_initial_schema.sql](/Users/yuta/vexum/internal%20system/training/supabase/migrations/0001_initial_schema.sql)
+- [supabase/migrations/0001_initial_schema.sql](../supabase/migrations/0001_initial_schema.sql)
 
 やること:
 
@@ -172,7 +172,7 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 
 対象ファイル:
 
-- [supabase/migrations/0002_expand_task_catalog.sql](/Users/yuta/vexum/internal%20system/training/supabase/migrations/0002_expand_task_catalog.sql)
+- [supabase/migrations/0002_expand_task_catalog.sql](../supabase/migrations/0002_expand_task_catalog.sql)
 
 やること:
 
@@ -216,7 +216,7 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 
 対象ファイル:
 
-- [supabase/seed/001_tasks.sql](/Users/yuta/vexum/internal%20system/training/supabase/seed/001_tasks.sql)
+- [supabase/seed/001_tasks.sql](../supabase/seed/001_tasks.sql)
 
 やること:
 
@@ -534,7 +534,7 @@ select task_code, title from public.tasks order by task_code;
 
 対象ファイル:
 
-- [supabase/migrations/0008_remove_batch_data_model.sql](/Users/yuta/vexum/internal%20system/training/supabase/migrations/0008_remove_batch_data_model.sql)
+- [supabase/migrations/0008_remove_batch_data_model.sql](../supabase/migrations/0008_remove_batch_data_model.sql)
 
 この migration を実行すると、以下を削除します。
 
@@ -824,7 +824,7 @@ order by reviewed_at desc;
 やること:
 
 1. Supabase の `SQL Editor` を開く
-2. [0005_storage_submission_evidence_policies.sql](/Users/yuta/vexum/internal%20system/training/supabase/migrations/0005_storage_submission_evidence_policies.sql) を実行する
+2. [0005_storage_submission_evidence_policies.sql](../supabase/migrations/0005_storage_submission_evidence_policies.sql) を実行する
 3. `destructive operations` の警告が出ても、今回は既存 policy の差し替えなのでそのまま進めてよい
 
 確認ポイント:
@@ -845,7 +845,7 @@ order by reviewed_at desc;
 やること:
 
 1. Supabase の `SQL Editor` を開く
-2. [0006_add_assigned_mentor_to_submissions.sql](/Users/yuta/vexum/internal%20system/training/supabase/migrations/0006_add_assigned_mentor_to_submissions.sql) を実行する
+2. [0006_add_assigned_mentor_to_submissions.sql](../supabase/migrations/0006_add_assigned_mentor_to_submissions.sql) を実行する
 
 確認ポイント:
 
