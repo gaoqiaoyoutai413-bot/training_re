@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f2efe8;
+  --foreground: #111827;
+  --card: rgba(255, 255, 255, 0.8);
+  --card-strong: #fffdf8;
+  --muted: #6b7280;
+  --border: rgba(17, 24, 39, 0.08);
+  --accent: #0f766e;
+  --accent-soft: #ccfbf1;
+  --accent-ink: #134e4a;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
+  --navy: #1f2a44;
+  --rose: #a1625d;
+  --shadow: 0 18px 50px rgba(17, 24, 39, 0.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 25%),
+    radial-gradient(circle at top right, rgba(161, 98, 93, 0.14), transparent 30%),
+    linear-gradient(180deg, #fbfaf7 0%, #f2efe8 100%);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--foreground);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.shell-grid {
+  background-image:
+    linear-gradient(rgba(17, 24, 39, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.panel {
+  background: var(--card);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
