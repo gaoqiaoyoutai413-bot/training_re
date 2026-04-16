@@ -5,7 +5,7 @@ import { DetailTabs } from "@/components/detail-tabs";
 import { ReviewScoreCard } from "@/components/review-score-card";
 import { SectionHeading } from "@/components/section-heading";
 import { formatMonthDay } from "@/lib/date-format";
-import { getMentorDraftBySubmissionId, getSubmissionDetail } from "@/lib/submission-repository";
+import { getSubmissionDetail } from "@/lib/submission-repository";
 
 export default async function SubmissionDetailPage({
   params,
@@ -19,7 +19,6 @@ export default async function SubmissionDetailPage({
     notFound();
   }
 
-  const draft = getMentorDraftBySubmissionId(id);
   const { submission, taskTitle, files, aiReview, mentorReview } = detail;
   const detailTabs = [
     {
@@ -129,7 +128,6 @@ export default async function SubmissionDetailPage({
           </div>
 
           {mentorReview ? <ReviewScoreCard review={mentorReview} submission={submission} /> : null}
-          {!mentorReview && draft ? <ReviewScoreCard draft={draft} submission={submission} /> : null}
         </section>
       </div>
     </AppShell>

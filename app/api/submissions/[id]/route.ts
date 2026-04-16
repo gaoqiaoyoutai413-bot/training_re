@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMentorDraftBySubmissionId, getSubmissionDetail } from "@/lib/submission-repository";
+import { getSubmissionDetail } from "@/lib/submission-repository";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -16,7 +16,6 @@ export async function GET(
 
   return NextResponse.json({
     ...detail,
-    mentorDraft: getMentorDraftBySubmissionId(id),
   });
 }
 

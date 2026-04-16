@@ -7,7 +7,7 @@ import { MentorReviewForm } from "@/components/mentor-review-form";
 import { ReviewScoreCard } from "@/components/review-score-card";
 import { SectionHeading } from "@/components/section-heading";
 import { formatMonthDay } from "@/lib/date-format";
-import { getMentorDraftBySubmissionId, getSubmissionDetail } from "@/lib/submission-repository";
+import { getSubmissionDetail } from "@/lib/submission-repository";
 
 export default async function MentorReviewDetailPage({
   params,
@@ -21,7 +21,6 @@ export default async function MentorReviewDetailPage({
     notFound();
   }
 
-  const draft = getMentorDraftBySubmissionId(id);
   const { submission, taskTitle, files, aiReview, mentorReview } = detail;
   const detailTabs = [
     {
@@ -135,13 +134,7 @@ export default async function MentorReviewDetailPage({
             )}
           </div>
 
-          {mentorReview ? (
-            <ReviewScoreCard review={mentorReview} submission={submission} />
-          ) : draft ? (
-            <ReviewScoreCard draft={draft} submission={submission} />
-          ) : (
-            <MentorReviewForm submissionId={submission.id} submissionUserId={submission.userId} />
-          )}
+          {mentorReview ? <ReviewScoreCard review={mentorReview} submission={submission} /> : <MentorReviewForm submissionId={submission.id} submissionUserId={submission.userId} />}
         </section>
       </div>
     </AppShell>

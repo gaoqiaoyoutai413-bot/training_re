@@ -1,4 +1,3 @@
-import { knowledgeEntries as mockKnowledgeEntries } from "@/lib/mock-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   KnowledgeEntry,
@@ -128,7 +127,7 @@ export async function getKnowledgeEntries(): Promise<KnowledgeEntry[]> {
   const { rows } = await fetchKnowledgeRows();
 
   if (rows.length === 0) {
-    return mockKnowledgeEntries;
+    return [];
   }
 
   return rows.map(mapKnowledgeRow);

@@ -59,6 +59,32 @@ export default async function QuestDetailPage({
 
       <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <section className="space-y-5">
+          {task.background || task.specificIssue || task.finalGoal ? (
+            <div className="grid gap-4 lg:grid-cols-3">
+              {task.background ? (
+                <div className="panel rounded-[30px] p-5">
+                  <div className="eyebrow text-xs text-slate-500">背景</div>
+                  <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">背景・導入前の状況</h3>
+                  <p className="mt-4 text-sm leading-7 text-slate-600">{task.background}</p>
+                </div>
+              ) : null}
+              {task.specificIssue ? (
+                <div className="panel rounded-[30px] p-5">
+                  <div className="eyebrow text-xs text-slate-500">課題</div>
+                  <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">解決したい具体的な課題</h3>
+                  <p className="mt-4 text-sm leading-7 text-slate-600">{task.specificIssue}</p>
+                </div>
+              ) : null}
+              {task.finalGoal ? (
+                <div className="panel rounded-[30px] p-5">
+                  <div className="eyebrow text-xs text-slate-500">ゴール</div>
+                  <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">最終解決（ゴール）</h3>
+                  <p className="mt-4 text-sm leading-7 text-slate-600">{task.finalGoal}</p>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="panel rounded-[30px] p-5">
               <div className="eyebrow text-xs text-slate-500">実装範囲</div>

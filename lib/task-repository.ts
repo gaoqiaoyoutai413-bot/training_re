@@ -1,4 +1,3 @@
-import { tasks as mockTasks } from "@/lib/mock-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   AcceptanceCriteria,
@@ -29,6 +28,9 @@ interface TaskRow {
   acceptance_criteria_json: unknown;
   ai_review_rubric_json: unknown;
   mentor_evaluation_sheet_json: unknown;
+  background: string | null;
+  specific_issue: string | null;
+  final_goal: string | null;
 }
 
 export interface TaskUpdateInput {
@@ -36,6 +38,9 @@ export interface TaskUpdateInput {
   summary: string;
   learningObjective: string;
   businessImpact: string;
+  background: string;
+  specificIssue: string;
+  finalGoal: string;
   learnerActions: string[];
   deliverables: string[];
   businessValueChecks: string[];
@@ -126,6 +131,9 @@ function mapTaskRow(row: TaskRow): Task {
     learnerActions: asStringArray(row.learner_actions_json),
     deliverables: asStringArray(row.deliverables_json),
     businessImpact: row.description_md ?? row.summary,
+    background: row.background ?? undefined,
+    specificIssue: row.specific_issue ?? undefined,
+    finalGoal: row.final_goal ?? undefined,
     recommendedDependencies: [],
     rubricHighlights: asStringArray(row.review_rubric_json),
     businessValueChecks: asStringArray(row.business_value_checks_json),
@@ -139,19 +147,19 @@ export async function getTasks() {
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
-    return mockTasks;
+    return [];
   }
 
   const { data, error } = await supabase
     .from("tasks")
     .select(
-      "id, task_code, version, title, summary, description_md, category, difficulty, estimated_hours, automation_weight, ai_weight, integration_weight, learning_objective, learner_actions_json, deliverables_json, review_rubric_json, business_value_checks_json, acceptance_criteria_json, ai_review_rubric_json, mentor_evaluation_sheet_json",
+      "id, task_code, version, title, summary, description_md, category, difficulty, estimated_hours, automation_weight, ai_weight, integration_weight, learning_objective, learner_actions_json, deliverables_json, review_rubric_json, business_value_checks_json, acceptance_criteria_json, ai_review_rubric_json, mentor_evaluation_sheet_json, background, specific_issue, final_goal",
     )
     .eq("is_active", true)
     .order("task_code", { ascending: true });
 
   if (error || !data) {
-    return mockTasks;
+    return [];
   }
 
   return (data as TaskRow[]).map(mapTaskRow);
@@ -176,6 +184,9 @@ export async function updateTaskByTaskCode(taskCode: string, input: TaskUpdateIn
       summary: input.summary,
       description_md: input.businessImpact,
       learning_objective: input.learningObjective,
+      background: input.background,
+      specific_issue: input.specificIssue,
+      final_goal: input.finalGoal,
       learner_actions_json: input.learnerActions,
       deliverables_json: input.deliverables,
       business_value_checks_json: input.businessValueChecks,

@@ -2,10 +2,11 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { QuestCard } from "@/components/quest-card";
 import { SectionHeading } from "@/components/section-heading";
-import { tasks } from "@/lib/mock-data";
+import { getTasks } from "@/lib/task-repository";
 import { formatTaskCategory } from "@/lib/utils";
 
-export default function QuestsPage() {
+export default async function QuestsPage() {
+  const tasks = await getTasks();
   const categories = ["all", ...new Set(tasks.map((task) => task.category))];
   const difficulties = ["all", "★1", "★2", "★3", "★4"];
 
@@ -32,11 +33,17 @@ export default function QuestsPage() {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        {tasks.map((task) => (
-          <Link key={task.id} href={`/quests/${task.taskCode}`}>
-            <QuestCard task={task} />
-          </Link>
-        ))}
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <Link key={task.id} href={`/quests/${task.taskCode}`}>
+              <QuestCard task={task} />
+            </Link>
+          ))
+        ) : (
+          <div className="panel rounded-[30px] p-6 text-sm text-slate-600 xl:col-span-2">
+            公開中の課題はまだ登録されていません。
+          </div>
+        )}
       </section>
     </AppShell>
   );

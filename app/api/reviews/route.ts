@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getSlackIdByEmail } from "@/lib/member-directory";
-import { mentorQueue } from "@/lib/mock-data";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { getSubmissionList } from "@/lib/submission-repository";
 import { sendMentorReviewedDirectMessage, sendMentorReviewedSlackNotification } from "@/lib/slack-notify";
@@ -23,7 +22,7 @@ export async function GET(request: Request) {
     search,
   });
 
-  return NextResponse.json({ items: items.length > 0 ? items : mentorQueue.slice(0, 0) });
+  return NextResponse.json({ items });
 }
 
 export async function POST(request: Request) {

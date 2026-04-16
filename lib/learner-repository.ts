@@ -1,4 +1,3 @@
-import { learners as mockLearners } from "@/lib/mock-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { LearnerSnapshot, SkillScores, SubmissionStatus } from "@/types/domain";
 
@@ -50,7 +49,7 @@ export async function getLearnerSnapshots(): Promise<LearnerSnapshot[]> {
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
-    return mockLearners;
+    return [];
   }
 
   const [{ data: profiles, error: profilesError }, { data: submissions }] = await Promise.all([
@@ -62,7 +61,7 @@ export async function getLearnerSnapshots(): Promise<LearnerSnapshot[]> {
   ]);
 
   if (profilesError || !profiles) {
-    return mockLearners;
+    return [];
   }
 
   const statsByUserId = new Map<

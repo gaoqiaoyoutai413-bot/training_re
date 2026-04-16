@@ -1,12 +1,6 @@
-import {
-  getSubmissionById as getMockSubmissionById,
-  mentorDrafts,
-  mentorQueue,
-} from "@/lib/mock-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   AiReviewRecord,
-  MentorReviewDraft,
   MentorReviewRecord,
   Submission,
   SubmissionDetailRecord,
@@ -274,7 +268,7 @@ export async function getSubmissionList(options: SubmissionListOptions = {}) {
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
-    return mentorQueue;
+    return [];
   }
 
   let query = supabase
@@ -290,7 +284,7 @@ export async function getSubmissionList(options: SubmissionListOptions = {}) {
 
   if (error || !data) {
     console.error("Failed to load submissions:", error);
-    return mentorQueue;
+    return [];
   }
 
   const mapped = await assembleSubmissions(data as SubmissionBaseRow[]);
@@ -321,18 +315,7 @@ export async function getSubmissionDetail(submissionId: string): Promise<Submiss
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
-    const mockSubmission = getMockSubmissionById(submissionId);
-    if (!mockSubmission) {
-      return null;
-    }
-
-    return {
-      submission: mockSubmission,
-      taskTitle: mockSubmission.taskCode,
-      files: [],
-      aiReview: null,
-      mentorReview: null,
-    };
+    return null;
   }
 
   const { data: submissionRow, error: submissionError } = await supabase
@@ -392,8 +375,4 @@ export async function getSubmissionDetail(submissionId: string): Promise<Submiss
     aiReview: aiReviewResult.data ? mapAiReviewRow(aiReviewResult.data as AiReviewRow) : null,
     mentorReview,
   };
-}
-
-export function getMentorDraftBySubmissionId(submissionId: string): MentorReviewDraft | null {
-  return mentorDrafts[submissionId] ?? null;
 }

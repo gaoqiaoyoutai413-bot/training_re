@@ -32,6 +32,9 @@ export async function PATCH(
     summary?: string;
     learningObjective?: string;
     businessImpact?: string;
+    background?: string;
+    specificIssue?: string;
+    finalGoal?: string;
     learnerActions?: string[];
     deliverables?: string[];
     businessValueChecks?: string[];
@@ -48,6 +51,9 @@ export async function PATCH(
     summary: String(body.summary ?? "").trim(),
     learningObjective: String(body.learningObjective ?? "").trim(),
     businessImpact: String(body.businessImpact ?? "").trim(),
+    background: String(body.background ?? "").trim(),
+    specificIssue: String(body.specificIssue ?? "").trim(),
+    finalGoal: String(body.finalGoal ?? "").trim(),
     learnerActions: Array.isArray(body.learnerActions) ? body.learnerActions : [],
     deliverables: Array.isArray(body.deliverables) ? body.deliverables : [],
     businessValueChecks: Array.isArray(body.businessValueChecks) ? body.businessValueChecks : [],

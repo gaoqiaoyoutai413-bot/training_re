@@ -11,6 +11,9 @@ type EditableTask = {
   summary: string;
   learningObjective: string;
   businessImpact: string;
+  background: string;
+  specificIssue: string;
+  finalGoal: string;
   learnerActions: string[];
   deliverables: string[];
   businessValueChecks: string[];
@@ -36,6 +39,9 @@ function toEditableTask(task: Task): EditableTask {
     summary: task.summary,
     learningObjective: task.learningObjective,
     businessImpact: task.businessImpact,
+    background: task.background ?? "",
+    specificIssue: task.specificIssue ?? "",
+    finalGoal: task.finalGoal ?? "",
     learnerActions: task.learnerActions,
     deliverables: task.deliverables,
     businessValueChecks: task.businessValueChecks,
@@ -131,6 +137,33 @@ export function TaskAdminManager({ tasks }: { tasks: Task[] }) {
                   className="min-h-24 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 outline-none"
                   value={draft.businessImpact}
                   onChange={(event) => setDraft((current) => (current ? { ...current, businessImpact: event.target.value } : current))}
+                />
+              </label>
+
+              <label className="space-y-2 md:col-span-2">
+                <span className="text-sm font-medium text-slate-700">背景・導入前の状況</span>
+                <textarea
+                  className="min-h-28 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 outline-none"
+                  value={draft.background}
+                  onChange={(event) => setDraft((current) => (current ? { ...current, background: event.target.value } : current))}
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-700">解決したい具体的な課題</span>
+                <textarea
+                  className="min-h-28 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 outline-none"
+                  value={draft.specificIssue}
+                  onChange={(event) => setDraft((current) => (current ? { ...current, specificIssue: event.target.value } : current))}
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-700">最終解決（ゴール）</span>
+                <textarea
+                  className="min-h-28 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 outline-none"
+                  value={draft.finalGoal}
+                  onChange={(event) => setDraft((current) => (current ? { ...current, finalGoal: event.target.value } : current))}
                 />
               </label>
 

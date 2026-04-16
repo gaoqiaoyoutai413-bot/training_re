@@ -1,11 +1,12 @@
 import { AppShell } from "@/components/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { StatCard } from "@/components/stat-card";
-import { tasks } from "@/lib/mock-data";
+import { getTasks } from "@/lib/task-repository";
 import { ListChecks, Users, Layers } from "lucide-react";
 import Link from "next/link";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const tasks = await getTasks();
   return (
     <AppShell currentPath="/admin">
       <section className="panel rounded-[34px] p-6 md:p-8">
@@ -18,7 +19,7 @@ export default function AdminPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <StatCard label="管理課題数" value={`${tasks.length}`} icon={<ListChecks className="h-4 w-4" />} hint="課題マスタから管理できます。" />
           <StatCard label="アクティブユーザー" value="--" icon={<Users className="h-4 w-4" />} hint="DB同期後に反映" />
-          <StatCard label="現在のバッチ" value="--" icon={<Layers className="h-4 w-4" />} hint="運用中のフェーズ" />
+          <StatCard label="利用状態管理" value="active" icon={<Layers className="h-4 w-4" />} hint="停止・退職は利用状態で管理" />
         </div>
       </section>
 
