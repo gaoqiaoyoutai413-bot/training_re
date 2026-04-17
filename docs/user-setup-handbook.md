@@ -7,6 +7,7 @@
 - Supabase の初期設定を担当する方
 - Google OAuth の設定を担当する方
 - ローカルで接続確認を行う方
+- 課題のスターターセットを管理したい方
 
 この手順書で扱う範囲:
 
@@ -16,6 +17,7 @@
 - Google OAuth 設定
 - Storage 作成
 - ローカル接続確認
+- スターターセット配布設定
 
 この手順書でまだ扱わない範囲:
 
@@ -964,12 +966,37 @@ Slack 通知は次のタイミングで送られます。
 - `inactive` または `retired` にしたユーザーがログインできない
 - 提出履歴やレビュー履歴は残る
 
-## 20. おすすめの次の進め方
+## 20. スターターセット管理 migration の反映
+
+課題ごとに事前配布する CSV / JSON / PDF / 画像などのスターターセットを管理画面から編集できるようにする migration です。
+
+やること:
+
+1. Supabase の `SQL Editor` を開く
+2. [0012_add_task_starter_kit_fields.sql](../supabase/migrations/0012_add_task_starter_kit_fields.sql) を実行する
+
+確認ポイント:
+
+- `public.tasks` に以下の列が追加されている
+  - `starter_kit_title`
+  - `starter_kit_description`
+  - `starter_kit_steps_json`
+  - `starter_kit_files_json`
+- `/admin/tasks` でスターターセット欄が表示される
+- `/quests/TASK-01` などで配布ファイルが表示される
+- `/submissions/new` で課題選択後にスターターセットが見える
+
+補足:
+
+- TASK-06 には NotebookLM 用のサンプル PDF を入れています
+- TASK-08 には OCR 用のサンプル請求書 / 領収書画像を入れています
+
+## 21. おすすめの次の進め方
 
 迷う場合は、次の順がおすすめです。
 
 1. Slack 通知の動作確認
-2. ナレッジ共有を本番化する
-3. `zip` 展開対応や AIレビュー精度改善を進める
+2. スターターセットの内容を課題ごとに調整する
+3. ナレッジ共有を本番化する
 
 この順で進めると、運用開始に必要な土台がかなり固まります。

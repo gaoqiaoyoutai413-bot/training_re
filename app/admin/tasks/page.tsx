@@ -13,7 +13,7 @@ export default async function AdminTasksPage() {
         <SectionHeading
           eyebrow="課題管理"
           title="課題マスタを管理画面から更新する"
-          description="README テンプレート、合格条件、AIレビュー基準に影響する項目を管理者が更新できる画面です。"
+          description="README テンプレート、合格条件、AIレビュー基準、スターターセットまで管理者が更新できる画面です。"
         />
       </section>
       <GoogleDocsExportCard />

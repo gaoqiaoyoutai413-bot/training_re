@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { taskStarterKits } from "@/lib/task-starter-kits";
 import type {
   AcceptanceCriteria,
   AiReviewCriterion,
@@ -31,6 +32,10 @@ interface TaskRow {
   background: string | null;
   specific_issue: string | null;
   final_goal: string | null;
+  starter_kit_title: string | null;
+  starter_kit_description: string | null;
+  starter_kit_steps_json: unknown;
+  starter_kit_files_json: unknown;
 }
 
 export interface TaskUpdateInput {
@@ -46,6 +51,14 @@ export interface TaskUpdateInput {
   businessValueChecks: string[];
   acceptanceCriteria: AcceptanceCriteria;
   aiReviewRubric: AiReviewCriterion[];
+  starterKitTitle: string;
+  starterKitDescription: string;
+  starterKitSetupSteps: string[];
+  starterKitFiles: Array<{
+    label: string;
+    path: string;
+    description: string;
+  }>;
 }
 
 function asStringArray(value: unknown) {
@@ -90,6 +103,36 @@ function asAiReviewRubric(value: unknown): AiReviewCriterion[] {
   });
 }
 
+function asStarterKitFiles(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") {
+      return [];
+    }
+
+    const candidate = item as Record<string, unknown>;
+
+    if (
+      typeof candidate.label !== "string" ||
+      typeof candidate.path !== "string" ||
+      typeof candidate.description !== "string"
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        label: candidate.label,
+        path: candidate.path,
+        description: candidate.description,
+      },
+    ];
+  });
+}
+
 function asMentorEvaluationSheet(value: unknown): MentorEvaluationSheet {
   if (!value || typeof value !== "object") {
     return {
@@ -113,6 +156,21 @@ function asMentorEvaluationSheet(value: unknown): MentorEvaluationSheet {
 }
 
 function mapTaskRow(row: TaskRow): Task {
+  const defaultStarterKit = taskStarterKits[row.task_code];
+  const starterKitTitle = row.starter_kit_title ?? defaultStarterKit?.title ?? "";
+  const starterKitDescription = row.starter_kit_description ?? defaultStarterKit?.description ?? "";
+  const starterKitSetupSteps = asStringArray(row.starter_kit_steps_json);
+  const starterKitFiles = asStarterKitFiles(row.starter_kit_files_json);
+  const starterKit =
+    starterKitTitle || starterKitDescription || starterKitSetupSteps.length > 0 || starterKitFiles.length > 0
+      ? {
+          title: starterKitTitle,
+          description: starterKitDescription,
+          setupSteps: starterKitSetupSteps.length > 0 ? starterKitSetupSteps : defaultStarterKit?.setupSteps ?? [],
+          files: starterKitFiles.length > 0 ? starterKitFiles : defaultStarterKit?.files ?? [],
+        }
+      : defaultStarterKit;
+
   return {
     id: row.id,
     taskCode: row.task_code,
@@ -134,6 +192,7 @@ function mapTaskRow(row: TaskRow): Task {
     background: row.background ?? undefined,
     specificIssue: row.specific_issue ?? undefined,
     finalGoal: row.final_goal ?? undefined,
+    starterKit,
     recommendedDependencies: [],
     rubricHighlights: asStringArray(row.review_rubric_json),
     businessValueChecks: asStringArray(row.business_value_checks_json),
@@ -153,7 +212,7 @@ export async function getTasks() {
   const { data, error } = await supabase
     .from("tasks")
     .select(
-      "id, task_code, version, title, summary, description_md, category, difficulty, estimated_hours, automation_weight, ai_weight, integration_weight, learning_objective, learner_actions_json, deliverables_json, review_rubric_json, business_value_checks_json, acceptance_criteria_json, ai_review_rubric_json, mentor_evaluation_sheet_json, background, specific_issue, final_goal",
+      "id, task_code, version, title, summary, description_md, category, difficulty, estimated_hours, automation_weight, ai_weight, integration_weight, learning_objective, learner_actions_json, deliverables_json, review_rubric_json, business_value_checks_json, acceptance_criteria_json, ai_review_rubric_json, mentor_evaluation_sheet_json, background, specific_issue, final_goal, starter_kit_title, starter_kit_description, starter_kit_steps_json, starter_kit_files_json",
     )
     .eq("is_active", true)
     .order("task_code", { ascending: true });
@@ -192,6 +251,10 @@ export async function updateTaskByTaskCode(taskCode: string, input: TaskUpdateIn
       business_value_checks_json: input.businessValueChecks,
       acceptance_criteria_json: input.acceptanceCriteria,
       ai_review_rubric_json: input.aiReviewRubric,
+      starter_kit_title: input.starterKitTitle,
+      starter_kit_description: input.starterKitDescription,
+      starter_kit_steps_json: input.starterKitSetupSteps,
+      starter_kit_files_json: input.starterKitFiles,
     })
     .eq("task_code", taskCode)
     .eq("is_active", true);

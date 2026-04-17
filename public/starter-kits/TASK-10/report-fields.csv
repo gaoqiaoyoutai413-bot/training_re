@@ -1,0 +1,6 @@
+field_key,label,type,required,example
+report_date,報告日,date,true,2026-04-17
+store_name,店舗名,text,true,Shibuya Store
+summary,本日の実施内容,textarea,true,新規来店者対応と在庫確認を実施
+issues,課題・共有事項,textarea,false,レジ端末の通信不安定
+next_action,明日の対応予定,textarea,true,在庫棚卸しと新スタッフ教育

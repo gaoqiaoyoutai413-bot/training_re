@@ -1,0 +1,4 @@
+customer_code,customer_name,contact_person,unit_price,tax_rate,quote_template
+C001,Alpha Dental Clinic,Sato,120000,10,standard
+C002,Bright Home Care,Suzuki,98000,10,standard
+C003,Central Support Office,Tanaka,150000,10,executive

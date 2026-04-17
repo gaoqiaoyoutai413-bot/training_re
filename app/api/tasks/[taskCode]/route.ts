@@ -38,6 +38,10 @@ export async function PATCH(
     learnerActions?: string[];
     deliverables?: string[];
     businessValueChecks?: string[];
+    starterKitTitle?: string;
+    starterKitDescription?: string;
+    starterKitSetupSteps?: string[];
+    starterKitFiles?: Array<{ label?: string; path?: string; description?: string }>;
     acceptanceCriteria?: {
       mustHave?: string[];
       minimumErrorHandling?: string[];
@@ -57,6 +61,28 @@ export async function PATCH(
     learnerActions: Array.isArray(body.learnerActions) ? body.learnerActions : [],
     deliverables: Array.isArray(body.deliverables) ? body.deliverables : [],
     businessValueChecks: Array.isArray(body.businessValueChecks) ? body.businessValueChecks : [],
+    starterKitTitle: String(body.starterKitTitle ?? "").trim(),
+    starterKitDescription: String(body.starterKitDescription ?? "").trim(),
+    starterKitSetupSteps: Array.isArray(body.starterKitSetupSteps) ? body.starterKitSetupSteps : [],
+    starterKitFiles: Array.isArray(body.starterKitFiles)
+      ? body.starterKitFiles.flatMap((item) => {
+          if (
+            typeof item?.label !== "string" ||
+            typeof item?.path !== "string" ||
+            typeof item?.description !== "string"
+          ) {
+            return [];
+          }
+
+          return [
+            {
+              label: item.label.trim(),
+              path: item.path.trim(),
+              description: item.description.trim(),
+            },
+          ];
+        })
+      : [],
     acceptanceCriteria: {
       mustHave: Array.isArray(body.acceptanceCriteria?.mustHave) ? body.acceptanceCriteria.mustHave : [],
       minimumErrorHandling: Array.isArray(body.acceptanceCriteria?.minimumErrorHandling)

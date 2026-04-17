@@ -17,6 +17,14 @@ type EditableTask = {
   learnerActions: string[];
   deliverables: string[];
   businessValueChecks: string[];
+  starterKitTitle: string;
+  starterKitDescription: string;
+  starterKitSetupSteps: string[];
+  starterKitFiles: Array<{
+    label: string;
+    path: string;
+    description: string;
+  }>;
   acceptanceCriteria: Task["acceptanceCriteria"];
   aiReviewRubric: Task["aiReviewRubric"];
 };
@@ -32,6 +40,32 @@ function fromMultiline(value: string) {
     .filter(Boolean);
 }
 
+function toStarterKitFiles(value: EditableTask["starterKitFiles"]) {
+  return value.map((file) => `${file.label} | ${file.path} | ${file.description}`).join("\n");
+}
+
+function fromStarterKitFiles(value: string): EditableTask["starterKitFiles"] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const [label, path, ...rest] = line.split("|").map((part) => part.trim());
+
+      if (!label || !path) {
+        return [];
+      }
+
+      return [
+        {
+          label,
+          path,
+          description: rest.join(" | "),
+        },
+      ];
+    });
+}
+
 function toEditableTask(task: Task): EditableTask {
   return {
     taskCode: task.taskCode,
@@ -45,6 +79,10 @@ function toEditableTask(task: Task): EditableTask {
     learnerActions: task.learnerActions,
     deliverables: task.deliverables,
     businessValueChecks: task.businessValueChecks,
+    starterKitTitle: task.starterKit?.title ?? "",
+    starterKitDescription: task.starterKit?.description ?? "",
+    starterKitSetupSteps: task.starterKit?.setupSteps ?? [],
+    starterKitFiles: task.starterKit?.files ?? [],
     acceptanceCriteria: task.acceptanceCriteria,
     aiReviewRubric: task.aiReviewRubric,
   };
@@ -99,7 +137,7 @@ export function TaskAdminManager({ tasks }: { tasks: Task[] }) {
           <>
             <div className="eyebrow text-xs text-slate-500">課題編集</div>
             <h3 className="mt-2 text-xl font-semibold text-[var(--navy)]">{selectedTask.taskCode}</h3>
-            <p className="mt-1 text-sm text-slate-600">README テンプレートや AIレビュー基準に影響する項目を編集できます。</p>
+            <p className="mt-1 text-sm text-slate-600">README テンプレートや AIレビュー基準に加えて、事前配布するスターターセットも編集できます。</p>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <label className="space-y-2 md:col-span-2">
@@ -287,6 +325,64 @@ export function TaskAdminManager({ tasks }: { tasks: Task[] }) {
                     )
                   }
                 />
+              </label>
+
+              <div className="md:col-span-2 mt-2 rounded-[24px] border border-[var(--line)] bg-white/70 p-4">
+                <div className="text-sm font-semibold text-[var(--navy)]">スターターセット</div>
+                <div className="mt-1 text-xs leading-5 text-slate-500">
+                  事前配布データ、セットアップ手順、素材リンクを課題ごとに管理します。
+                </div>
+              </div>
+
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-700">スターターセット名</span>
+                <input
+                  className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 outline-none"
+                  value={draft.starterKitTitle}
+                  onChange={(event) =>
+                    setDraft((current) => (current ? { ...current, starterKitTitle: event.target.value } : current))
+                  }
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-700">スターターセット概要</span>
+                <textarea
+                  className="min-h-24 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 outline-none"
+                  value={draft.starterKitDescription}
+                  onChange={(event) =>
+                    setDraft((current) => (current ? { ...current, starterKitDescription: event.target.value } : current))
+                  }
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-700">初期セットアップ手順</span>
+                <textarea
+                  className="min-h-32 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 outline-none"
+                  value={toMultiline(draft.starterKitSetupSteps)}
+                  onChange={(event) =>
+                    setDraft((current) =>
+                      current ? { ...current, starterKitSetupSteps: fromMultiline(event.target.value) } : current,
+                    )
+                  }
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-slate-700">配布ファイル</span>
+                <textarea
+                  className="min-h-32 w-full rounded-[24px] border border-black/10 bg-white px-4 py-4 font-mono text-sm outline-none"
+                  value={toStarterKitFiles(draft.starterKitFiles)}
+                  onChange={(event) =>
+                    setDraft((current) =>
+                      current ? { ...current, starterKitFiles: fromStarterKitFiles(event.target.value) } : current,
+                    )
+                  }
+                />
+                <div className="text-xs leading-5 text-slate-500">
+                  1行ごとに <code>表示名 | /starter-kits/... | 説明</code> の形式で入力します。
+                </div>
               </label>
             </div>
 

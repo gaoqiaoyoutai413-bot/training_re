@@ -1,0 +1,4 @@
+line_user_id,target_name,event_name,event_date,notify_7_days,notify_1_day
+U001,Patient A,Follow-up Visit,2026-04-23,true,true
+U002,Staff B,Night Shift,2026-04-18,true,true
+U003,Client C,Invoice Deadline,2026-04-24,true,true

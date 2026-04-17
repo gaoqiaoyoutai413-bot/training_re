@@ -1,0 +1,5 @@
+record_id,owner_name,category,status,due_date,last_action_date,reported_at
+R001,Sato,follow_up,in_progress,2026-04-16,2026-04-10,
+R002,Suzuki,wakeup_check,pending,2026-04-17,2026-04-16,
+R003,Tanaka,follow_up,done,2026-04-20,2026-04-16,2026-04-16 08:40
+R004,Nakamura,departure_check,pending,2026-04-16,2026-04-15,

@@ -1,0 +1,14 @@
+{
+  "required_slots": [
+    { "day": "Mon", "required_count": 2 },
+    { "day": "Tue", "required_count": 2 },
+    { "day": "Wed", "required_count": 1 },
+    { "day": "Thu", "required_count": 2 },
+    { "day": "Fri", "required_count": 1 }
+  ],
+  "members": [
+    { "name": "Sato", "available_days": ["Mon", "Tue", "Thu"], "max_days_per_week": 3 },
+    { "name": "Suzuki", "available_days": ["Mon", "Wed", "Fri"], "max_days_per_week": 2 },
+    { "name": "Tanaka", "available_days": ["Tue", "Thu", "Fri"], "max_days_per_week": 3 }
+  ]
+}

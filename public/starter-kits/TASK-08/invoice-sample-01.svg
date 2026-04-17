@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#f8f6f1"/>
+  <rect x="70" y="70" width="760" height="1060" rx="24" fill="#ffffff" stroke="#d8d2c5" stroke-width="3"/>
+  <text x="90" y="130" fill="#1e293b" font-size="42" font-family="Arial, sans-serif" font-weight="700">請求書</text>
+  <text x="90" y="180" fill="#475569" font-size="24" font-family="Arial, sans-serif">請求番号: INV-2026-0417</text>
+  <text x="90" y="215" fill="#475569" font-size="24" font-family="Arial, sans-serif">請求日: 2026/04/17</text>
+  <text x="90" y="250" fill="#475569" font-size="24" font-family="Arial, sans-serif">取引先: 株式会社サンプル商事</text>
+  <line x1="90" y1="310" x2="810" y2="310" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="100" y="360" fill="#0f172a" font-size="24" font-family="Arial, sans-serif">項目</text>
+  <text x="580" y="360" fill="#0f172a" font-size="24" font-family="Arial, sans-serif">金額</text>
+  <line x1="90" y1="385" x2="810" y2="385" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="100" y="440" fill="#334155" font-size="24" font-family="Arial, sans-serif">イベント運営支援費</text>
+  <text x="600" y="440" fill="#334155" font-size="24" font-family="Arial, sans-serif">120,000円</text>
+  <text x="100" y="495" fill="#334155" font-size="24" font-family="Arial, sans-serif">交通費</text>
+  <text x="600" y="495" fill="#334155" font-size="24" font-family="Arial, sans-serif">8,400円</text>
+  <text x="100" y="550" fill="#334155" font-size="24" font-family="Arial, sans-serif">調整費</text>
+  <text x="600" y="550" fill="#334155" font-size="24" font-family="Arial, sans-serif">1,600円</text>
+  <rect x="470" y="650" width="300" height="110" rx="18" fill="#eef2ff"/>
+  <text x="500" y="705" fill="#312e81" font-size="28" font-family="Arial, sans-serif" font-weight="700">合計金額</text>
+  <text x="500" y="742" fill="#312e81" font-size="34" font-family="Arial, sans-serif" font-weight="700">130,000円</text>
+  <text x="90" y="940" fill="#64748b" font-size="22" font-family="Arial, sans-serif">備考: 4月分の業務委託費として請求</text>
+</svg>

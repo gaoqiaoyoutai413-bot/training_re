@@ -85,6 +85,41 @@ export default async function QuestDetailPage({
             </div>
           ) : null}
 
+          {task.starterKit ? (
+            <div className="panel rounded-[30px] p-5">
+              <div className="eyebrow text-xs text-slate-500">スターターセット</div>
+              <h3 className="mt-2 text-xl font-semibold text-[var(--navy)]">{task.starterKit.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{task.starterKit.description}</p>
+
+              <div className="mt-4 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+                <div className="rounded-[22px] bg-white/80 p-4">
+                  <div className="text-sm font-medium text-slate-700">開発を始める前の手順</div>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                    {task.starterKit.setupSteps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-[22px] bg-white/80 p-4">
+                  <div className="text-sm font-medium text-slate-700">配布ファイル</div>
+                  <div className="mt-3 grid gap-3">
+                    {task.starterKit.files.map((file) => (
+                      <a
+                        key={file.path}
+                        className="rounded-[18px] border border-black/5 bg-white px-4 py-3 text-sm text-[var(--accent-ink)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+                        download
+                        href={file.path}
+                      >
+                        <div className="font-medium">{file.label}</div>
+                        <div className="mt-1 text-xs leading-5 text-slate-500">{file.description}</div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="panel rounded-[30px] p-5">
               <div className="eyebrow text-xs text-slate-500">実装範囲</div>

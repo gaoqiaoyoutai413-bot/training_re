@@ -1,0 +1,4 @@
+sample_id,vendor_name,invoice_date,total_amount,tax_amount
+INV-001,Alpha Services,2026-04-01,132000,12000
+INV-002,Bright Medical,2026-04-03,88000,8000
+INV-003,Central Office,2026-04-05,154000,14000

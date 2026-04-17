@@ -67,6 +67,19 @@ export interface MentorEvaluationSheet {
   commentTemplate: string;
 }
 
+export interface StarterKitFile {
+  label: string;
+  path: string;
+  description: string;
+}
+
+export interface StarterKit {
+  title: string;
+  description: string;
+  setupSteps: string[];
+  files: StarterKitFile[];
+}
+
 export interface Task {
   id: string;
   taskCode: string;
@@ -84,6 +97,7 @@ export interface Task {
   background?: string;
   specificIssue?: string;
   finalGoal?: string;
+  starterKit?: StarterKit;
   recommendedDependencies: TaskDependency[];
   rubricHighlights: string[];
   businessValueChecks: string[];

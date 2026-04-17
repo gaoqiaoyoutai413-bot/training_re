@@ -114,6 +114,41 @@ export function SubmissionForm({ tasks }: { tasks: Task[] }) {
         </div>
       ) : null}
 
+      {selectedTask?.starterKit ? (
+        <div className="rounded-[28px] bg-white/80 p-5 text-sm leading-6 text-slate-600 md:col-span-2">
+          <div className="font-medium text-[var(--navy)]">事前配布スターターセット</div>
+          <p className="mt-2 text-xs text-slate-500">
+            テストデータや項目定義を先に配布しています。環境準備よりも実装から入りたいときに使ってください。
+          </p>
+          <div className="mt-4 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="rounded-[20px] bg-[var(--sand)] p-4">
+              <div className="text-sm font-medium text-slate-700">最初の進め方</div>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                {selectedTask.starterKit.setupSteps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-[20px] bg-[var(--sand)] p-4">
+              <div className="text-sm font-medium text-slate-700">配布ファイル</div>
+              <div className="mt-3 grid gap-3">
+                {selectedTask.starterKit.files.map((file) => (
+                  <a
+                    key={file.path}
+                    className="rounded-[16px] bg-white px-4 py-3 text-sm text-[var(--accent-ink)] transition hover:bg-[var(--accent-soft)]"
+                    download
+                    href={file.path}
+                  >
+                    <div className="font-medium">{file.label}</div>
+                    <div className="mt-1 text-xs leading-5 text-slate-500">{file.description}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <label className="space-y-2 md:col-span-2">
         <span className="text-sm font-medium text-slate-700">README / 提出内容</span>
         <textarea
