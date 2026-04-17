@@ -78,6 +78,7 @@ function mapSubmissionFileRow(row: SubmissionFileRow): SubmissionFileRecord {
     fileType: row.file_type,
     mimeType: row.mime_type,
     uploadedAt: row.uploaded_at,
+    previewUrl: null,
   };
 }
 
@@ -368,10 +369,28 @@ export async function getSubmissionDetail(submissionId: string): Promise<Submiss
     );
   }
 
+  const mappedFiles = ((filesResult.data ?? []) as SubmissionFileRow[]).map(mapSubmissionFileRow);
+  const signedUrlResult =
+    mappedFiles.length > 0
+      ? await supabase.storage
+          .from("submission-evidence")
+          .createSignedUrls(
+            mappedFiles.map((file) => file.storagePath),
+            60 * 60,
+          )
+      : { data: [], error: null };
+
+  const signedUrlMap = new Map(
+    (signedUrlResult.data ?? []).map((item) => [item.path, item.signedUrl ?? null]),
+  );
+
   return {
     submission,
     taskTitle: taskResult.data?.title ?? submission.taskTitle ?? null,
-    files: ((filesResult.data ?? []) as SubmissionFileRow[]).map(mapSubmissionFileRow),
+    files: mappedFiles.map((file) => ({
+      ...file,
+      previewUrl: signedUrlMap.get(file.storagePath) ?? null,
+    })),
     aiReview: aiReviewResult.data ? mapAiReviewRow(aiReviewResult.data as AiReviewRow) : null,
     mentorReview,
   };

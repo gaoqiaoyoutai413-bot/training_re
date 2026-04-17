@@ -20,6 +20,8 @@ export default async function SubmissionDetailPage({
   }
 
   const { submission, taskTitle, files, aiReview, mentorReview } = detail;
+  const mockupFiles = files.filter((file) => file.fileType === "mock_image");
+  const codeFiles = files.filter((file) => file.fileType === "code_file");
   const detailTabs = [
     {
       id: "readme",
@@ -45,27 +47,102 @@ export default async function SubmissionDetailPage({
         <div className="panel rounded-[26px] bg-white/60 p-5">
           <div className="flex items-center justify-between gap-3">
             <h4 className="text-lg font-semibold text-[var(--navy)]">モック画像</h4>
-            <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500">{files.length}件</span>
+            <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-600">{mockupFiles.length}件</span>
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
-            {files.length > 0 ? (
-              files.map((file) => (
-                <details key={file.id} className="rounded-[18px] bg-white p-4 text-sm text-slate-600">
-                  <summary className="cursor-pointer list-none">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-medium text-[var(--navy)]">{file.fileType}</div>
-                        <div className="mt-1 text-xs text-slate-500">{file.mimeType ?? "mime 未設定"}</div>
-                      </div>
-                      <span className="text-xs text-slate-400">詳細</span>
+            {mockupFiles.length > 0 ? (
+              mockupFiles.map((file) => (
+                <div key={file.id} className="overflow-hidden rounded-[18px] bg-white p-4 text-sm text-slate-700">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium text-[var(--navy)]">モック画像</div>
+                      <div className="mt-1 text-xs text-slate-600">{file.mimeType ?? "mime 未設定"}</div>
                     </div>
-                  </summary>
-                  <div className="mt-3 break-all text-xs leading-5">{file.storagePath}</div>
-                </details>
+                    {file.previewUrl ? (
+                      <a
+                        className="rounded-full bg-[var(--navy)] px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
+                        href={file.previewUrl}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        別タブで開く
+                      </a>
+                    ) : null}
+                  </div>
+                  {file.previewUrl ? (
+                    <img
+                      alt="提出モック画像"
+                      className="mt-4 h-auto max-h-[420px] w-full rounded-[14px] border border-black/5 object-contain"
+                      src={file.previewUrl}
+                    />
+                  ) : (
+                    <div className="mt-4 rounded-[14px] border border-dashed border-black/10 p-4 text-xs text-slate-500">
+                      プレビュー URL を生成できませんでした。
+                    </div>
+                  )}
+                </div>
               ))
             ) : (
               <div className="rounded-[20px] bg-white p-4 text-sm text-slate-600 lg:col-span-2">モック画像はまだ登録されていません。</div>
             )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "code",
+      label: "コード",
+      note: "コード提出リンクと添付したコードファイルを確認できます。",
+      content: (
+        <div className="space-y-4">
+          <div className="panel rounded-[26px] bg-white/60 p-5">
+            <div className="text-sm font-medium text-slate-700">コード提出リンク</div>
+            {submission.sourceCodeUrl ? (
+              <a
+                className="mt-3 block rounded-[20px] bg-white p-4 text-sm leading-6 text-[var(--accent-ink)] underline-offset-4 hover:underline"
+                href={submission.sourceCodeUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {submission.sourceCodeUrl}
+              </a>
+            ) : (
+              <div className="mt-3 rounded-[20px] bg-white p-4 text-sm text-slate-600">コード提出リンクは登録されていません。</div>
+            )}
+          </div>
+
+          <div className="panel rounded-[26px] bg-white/60 p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-sm font-medium text-slate-700">コードファイル</div>
+              <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-600">{codeFiles.length}件</span>
+            </div>
+            <div className="mt-4 grid gap-3">
+              {codeFiles.length > 0 ? (
+                codeFiles.map((file) => (
+                  <div key={file.id} className="rounded-[18px] bg-white p-4 text-sm text-slate-700">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="font-medium text-[var(--navy)]">{file.storagePath.split("/").pop()}</div>
+                        <div className="mt-1 text-xs text-slate-600">{file.mimeType ?? "mime 未設定"}</div>
+                      </div>
+                      {file.previewUrl ? (
+                        <a
+                          className="rounded-full bg-[var(--navy)] px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
+                          href={file.previewUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          ダウンロード
+                        </a>
+                      ) : null}
+                    </div>
+                    <div className="mt-3 break-all text-xs leading-5 text-slate-500">{file.storagePath}</div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-[20px] bg-white p-4 text-sm text-slate-600">コードファイルはまだ登録されていません。</div>
+              )}
+            </div>
           </div>
         </div>
       ),
@@ -110,23 +187,6 @@ export default async function SubmissionDetailPage({
         </section>
 
         <section className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <div className="panel rounded-[30px] p-5">
-            <div className="eyebrow text-xs text-slate-500">補足情報</div>
-            <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">補足リンク</h3>
-            {submission.sourceCodeUrl ? (
-              <a
-                className="mt-3 block rounded-[20px] bg-white/80 p-4 text-sm leading-6 text-[var(--accent-ink)] underline-offset-4 hover:underline"
-                href={submission.sourceCodeUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                {submission.sourceCodeUrl}
-              </a>
-            ) : (
-              <div className="mt-3 rounded-[20px] bg-white/80 p-4 text-sm text-slate-600">補足リンクは提出されていません。</div>
-            )}
-          </div>
-
           {mentorReview ? <ReviewScoreCard review={mentorReview} submission={submission} /> : null}
         </section>
       </div>

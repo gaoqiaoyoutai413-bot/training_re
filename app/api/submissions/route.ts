@@ -11,6 +11,17 @@ function sanitizeFileName(fileName: string) {
   return safe || "evidence-file";
 }
 
+function isAllowedCodeFile(file: File) {
+  const normalizedName = file.name.toLowerCase();
+  return (
+    /\.(zip|gs|js|ts|tsx|py|html|css|json|md|ipynb)$/i.test(normalizedName) ||
+    (file.type || "").startsWith("text/") ||
+    file.type === "application/json" ||
+    file.type === "application/zip" ||
+    file.type === "application/x-zip-compressed"
+  );
+}
+
 export async function POST(request: Request) {
   const authorized = await getAuthorizedProfile(request, ["student", "mentor", "admin"]);
 
@@ -29,6 +40,7 @@ export async function POST(request: Request) {
   const sourceCodeUrl = String(formData.get("sourceCodeUrl") ?? "").trim();
   const businessValueText = String(formData.get("businessValueText") ?? "").trim();
   const mockupFiles = formData.getAll("mockupFiles").filter((entry): entry is File => entry instanceof File && entry.size > 0);
+  const codeFiles = formData.getAll("codeFiles").filter((entry): entry is File => entry instanceof File && entry.size > 0);
 
   if (!taskCode || !businessValueText.trim()) {
     return NextResponse.json({ message: "README は必須です。" }, { status: 400 });
@@ -40,6 +52,13 @@ export async function POST(request: Request) {
 
   if (mockupFiles.some((file) => !((file.type || "").startsWith("image/") || /\.(png|jpe?g|webp)$/i.test(file.name)))) {
     return NextResponse.json({ message: "モック画像は png / jpg / jpeg / webp のみ提出できます。" }, { status: 400 });
+  }
+
+  if (codeFiles.some((file) => !isAllowedCodeFile(file))) {
+    return NextResponse.json(
+      { message: "コードファイルは zip / gs / js / ts / tsx / py / html / css / json / md / ipynb のみ提出できます。" },
+      { status: 400 },
+    );
   }
 
   const { data: task, error: taskError } = await supabase
@@ -110,6 +129,32 @@ export async function POST(request: Request) {
     });
   }
 
+  for (const codeFile of codeFiles) {
+    const extension = codeFile.name.includes(".")
+      ? codeFile.name.split(".").pop()?.toLowerCase() ?? "bin"
+      : "bin";
+    const safeFileName = sanitizeFileName(codeFile.name);
+    const storagePath = `${submission.id}/code/${Date.now()}-${safeFileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("submission-evidence")
+      .upload(storagePath, codeFile, {
+        contentType: codeFile.type || "application/octet-stream",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      return NextResponse.json({ message: `コードファイルの保存に失敗しました: ${uploadError.message}` }, { status: 500 });
+    }
+
+    await supabase.from("submission_files").insert({
+      submission_id: submission.id,
+      storage_path: storagePath,
+      file_type: "code_file",
+      mime_type: codeFile.type || extension,
+    });
+  }
+
   try {
     await sendSubmissionCreatedSlackNotification({
       taskCode: task.task_code,
@@ -125,7 +170,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       status: "accepted",
-      message: "README とモック画像を保存しました。",
+      message: "README、モック画像、コード提出情報を保存しました。",
       submissionId: submission.id,
     },
     { status: 201 },

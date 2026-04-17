@@ -130,6 +130,7 @@ export interface SubmissionFileRecord {
   fileType: string;
   mimeType: string | null;
   uploadedAt?: string;
+  previewUrl?: string | null;
 }
 
 export interface SubmissionDetailRecord {

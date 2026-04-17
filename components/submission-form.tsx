@@ -10,6 +10,7 @@ export function SubmissionForm({ tasks }: { tasks: Task[] }) {
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [mockupSummary, setMockupSummary] = useState<string>("");
+  const [codeSummary, setCodeSummary] = useState<string>("");
   const [selectedTaskCode, setSelectedTaskCode] = useState<string>("");
   const { profile, session } = useAuth();
   const selectedTask = tasks.find((task) => task.taskCode === selectedTaskCode) ?? tasks[0] ?? null;
@@ -51,6 +52,7 @@ export function SubmissionForm({ tasks }: { tasks: Task[] }) {
           setMessage(result.message ?? "提出を保存しました。");
           form.reset();
           setMockupSummary("");
+          setCodeSummary("");
         });
       }}
     >
@@ -100,6 +102,42 @@ export function SubmissionForm({ tasks }: { tasks: Task[] }) {
           画面モック、実行結果のスクリーンショット、ワイヤーフレームなどを最低1枚提出してください。
         </p>
         {mockupSummary ? <p className="text-xs text-[var(--accent-ink)]">選択中: {mockupSummary}</p> : null}
+      </label>
+
+      <label className="space-y-2 md:col-span-2">
+        <span className="text-sm font-medium text-slate-700">コード提出リンク</span>
+        <input
+          className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 outline-none"
+          name="sourceCodeUrl"
+          placeholder="GitHub / Google Drive / Colab / Apps Script プロジェクトなど"
+          type="url"
+        />
+        <p className="text-xs leading-5 text-slate-500">
+          任意です。リポジトリ、Colab、Apps Script、Google Drive など、コードや成果物にたどれるリンクを入れられます。
+        </p>
+      </label>
+
+      <label className="space-y-2 md:col-span-2">
+        <span className="text-sm font-medium text-slate-700">コードファイル</span>
+        <input
+          accept=".zip,.gs,.js,.ts,.tsx,.py,.html,.css,.json,.md,.ipynb"
+          className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 outline-none file:mr-4 file:rounded-full file:border-0 file:bg-[var(--navy)] file:px-4 file:py-2 file:text-sm file:text-white"
+          multiple
+          name="codeFiles"
+          type="file"
+          onChange={(event) => {
+            const files = Array.from(event.currentTarget.files ?? []);
+            if (files.length === 0) {
+              setCodeSummary("");
+              return;
+            }
+            setCodeSummary(`${files.length}件のコードファイルを選択中`);
+          }}
+        />
+        <p className="text-xs leading-5 text-slate-500">
+          任意です。ZIP 一式、主要ソース、Colab ノートブックなどを添付できます。
+        </p>
+        {codeSummary ? <p className="text-xs text-[var(--accent-ink)]">選択中: {codeSummary}</p> : null}
       </label>
 
       {selectedTask ? (
@@ -163,7 +201,7 @@ export function SubmissionForm({ tasks }: { tasks: Task[] }) {
       </label>
 
       <div className="rounded-[28px] bg-[var(--accent-soft)] p-5 text-sm leading-6 text-[var(--accent-ink)] md:col-span-2">
-        この提出フォームでは、README とモック画像を主提出物として扱います。GitHub リンクは不要です。AI一次レビューも README を優先して読み、モック画像はナレッジ共有にも活用できます。
+        この提出フォームでは、README とモック画像を主提出物として扱います。コード提出リンクやコードファイルは任意で追加でき、モック画像は提出詳細画面でシステム内プレビューできます。
       </div>
 
       {error ? (
