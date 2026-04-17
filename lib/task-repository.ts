@@ -209,15 +209,32 @@ export async function getTasks() {
     return [];
   }
 
+  const baseSelect =
+    "id, task_code, version, title, summary, description_md, category, difficulty, estimated_hours, automation_weight, ai_weight, integration_weight, learning_objective, learner_actions_json, deliverables_json, review_rubric_json, business_value_checks_json, acceptance_criteria_json, ai_review_rubric_json, mentor_evaluation_sheet_json, background, specific_issue, final_goal";
+  const starterSelect =
+    "starter_kit_title, starter_kit_description, starter_kit_steps_json, starter_kit_files_json";
+
   const { data, error } = await supabase
     .from("tasks")
-    .select(
-      "id, task_code, version, title, summary, description_md, category, difficulty, estimated_hours, automation_weight, ai_weight, integration_weight, learning_objective, learner_actions_json, deliverables_json, review_rubric_json, business_value_checks_json, acceptance_criteria_json, ai_review_rubric_json, mentor_evaluation_sheet_json, background, specific_issue, final_goal, starter_kit_title, starter_kit_description, starter_kit_steps_json, starter_kit_files_json",
-    )
+    .select(`${baseSelect}, ${starterSelect}`)
     .eq("is_active", true)
     .order("task_code", { ascending: true });
 
-  if (error || !data) {
+  if (error) {
+    const fallback = await supabase
+      .from("tasks")
+      .select(baseSelect)
+      .eq("is_active", true)
+      .order("task_code", { ascending: true });
+
+    if (fallback.error || !fallback.data) {
+      return [];
+    }
+
+    return (fallback.data as TaskRow[]).map(mapTaskRow);
+  }
+
+  if (!data) {
     return [];
   }
 
