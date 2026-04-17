@@ -1,6 +1,21 @@
 field_key,label,type,required,example
 report_date,報告日,date,true,2026-04-17
 store_name,店舗名,text,true,Shibuya Store
+staff_name,担当者名,text,true,高橋 悠汰
+shift_type,シフト区分,select,true,日勤
+start_time,勤務開始時刻,time,true,09:00
+end_time,勤務終了時刻,time,true,18:00
 summary,本日の実施内容,textarea,true,新規来店者対応と在庫確認を実施
+visitors_count,来店者数,number,false,24
+new_customers,新規顧客数,number,false,5
+sales_amount,売上金額,number,false,128000
 issues,課題・共有事項,textarea,false,レジ端末の通信不安定
+incident_flag,インシデント有無,checkbox,false,false
+incident_detail,インシデント詳細,textarea,false,レジ再起動で復旧
+inventory_status,在庫状況,select,false,不足あり
+required_support,本部への依頼,textarea,false,POP追加印刷希望
+customer_feedback,顧客フィードバック,textarea,false,新メニューの案内が分かりやすいとの声あり
+photo_url,現場写真URL,text,false,https://example.com/report-photo-01
 next_action,明日の対応予定,textarea,true,在庫棚卸しと新スタッフ教育
+manager_check,責任者確認状況,select,false,未確認
+submitted_via,提出経路,text,false,web_app

@@ -1,14 +1,33 @@
 {
   "required_slots": [
-    { "day": "Mon", "required_count": 2 },
-    { "day": "Tue", "required_count": 2 },
-    { "day": "Wed", "required_count": 1 },
-    { "day": "Thu", "required_count": 2 },
-    { "day": "Fri", "required_count": 1 }
+    { "day": "Mon", "required_count": 3 },
+    { "day": "Tue", "required_count": 4 },
+    { "day": "Wed", "required_count": 3 },
+    { "day": "Thu", "required_count": 4 },
+    { "day": "Fri", "required_count": 4 },
+    { "day": "Sat", "required_count": 2 },
+    { "day": "Sun", "required_count": 2 }
   ],
   "members": [
     { "name": "Sato", "available_days": ["Mon", "Tue", "Thu"], "max_days_per_week": 3 },
     { "name": "Suzuki", "available_days": ["Mon", "Wed", "Fri"], "max_days_per_week": 2 },
-    { "name": "Tanaka", "available_days": ["Tue", "Thu", "Fri"], "max_days_per_week": 3 }
+    { "name": "Tanaka", "available_days": ["Tue", "Thu", "Fri"], "max_days_per_week": 3 },
+    { "name": "Nakamura", "available_days": ["Mon", "Tue", "Wed", "Thu"], "max_days_per_week": 4 },
+    { "name": "Kobayashi", "available_days": ["Wed", "Thu", "Fri"], "max_days_per_week": 3 },
+    { "name": "Takahashi", "available_days": ["Tue", "Fri", "Sat"], "max_days_per_week": 3 },
+    { "name": "Inoue", "available_days": ["Mon", "Thu", "Sun"], "max_days_per_week": 2 },
+    { "name": "Yoshida", "available_days": ["Tue", "Wed", "Sat"], "max_days_per_week": 3 },
+    { "name": "Yamamoto", "available_days": ["Mon", "Fri", "Sun"], "max_days_per_week": 2 },
+    { "name": "Kato", "available_days": ["Wed", "Thu", "Fri", "Sat"], "max_days_per_week": 4 },
+    { "name": "Sasaki", "available_days": ["Mon", "Tue", "Sat"], "max_days_per_week": 3 },
+    { "name": "Aoki", "available_days": ["Thu", "Fri", "Sun"], "max_days_per_week": 3 },
+    { "name": "Matsuda", "available_days": ["Mon", "Wed", "Thu"], "max_days_per_week": 3 },
+    { "name": "Shimizu", "available_days": ["Tue", "Thu", "Sat"], "max_days_per_week": 3 },
+    { "name": "Fujita", "available_days": ["Wed", "Fri", "Sun"], "max_days_per_week": 3 },
+    { "name": "Morita", "available_days": ["Mon", "Tue", "Fri"], "max_days_per_week": 3 },
+    { "name": "Okada", "available_days": ["Tue", "Wed", "Thu", "Fri"], "max_days_per_week": 4 },
+    { "name": "Ishikawa", "available_days": ["Mon", "Sat", "Sun"], "max_days_per_week": 3 },
+    { "name": "Kondo", "available_days": ["Tue", "Thu", "Sun"], "max_days_per_week": 3 },
+    { "name": "Hasegawa", "available_days": ["Wed", "Fri", "Sat"], "max_days_per_week": 3 }
   ]
 }

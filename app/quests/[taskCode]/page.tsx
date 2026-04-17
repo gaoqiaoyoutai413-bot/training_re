@@ -5,6 +5,26 @@ import { SectionHeading } from "@/components/section-heading";
 import { getTasks } from "@/lib/task-repository";
 import { formatDifficulty, formatTaskCategory } from "@/lib/utils";
 
+function getPreviewType(path: string) {
+  const normalized = path.toLowerCase();
+
+  if (normalized.endsWith(".pdf")) {
+    return "pdf";
+  }
+
+  if (
+    normalized.endsWith(".png") ||
+    normalized.endsWith(".jpg") ||
+    normalized.endsWith(".jpeg") ||
+    normalized.endsWith(".webp") ||
+    normalized.endsWith(".svg")
+  ) {
+    return "image";
+  }
+
+  return null;
+}
+
 export default async function QuestDetailPage({
   params,
 }: {
@@ -21,6 +41,7 @@ export default async function QuestDetailPage({
   const relatedTasks = tasks.filter((item) =>
     task.recommendedDependencies.some((dependency) => dependency.taskCode === item.taskCode),
   );
+  const previewableStarterFiles = task.starterKit?.files.filter((file) => getPreviewType(file.path)) ?? [];
 
   return (
     <AppShell currentPath="/quests">
@@ -104,19 +125,66 @@ export default async function QuestDetailPage({
                   <div className="text-sm font-medium text-slate-700">配布ファイル</div>
                   <div className="mt-3 grid gap-3">
                     {task.starterKit.files.map((file) => (
-                      <a
+                      <div
                         key={file.path}
-                        className="rounded-[18px] border border-black/5 bg-white px-4 py-3 text-sm text-[var(--accent-ink)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
-                        download
-                        href={file.path}
+                        className="rounded-[18px] border border-black/5 bg-white px-4 py-3 text-sm text-[var(--accent-ink)]"
                       >
-                        <div className="font-medium">{file.label}</div>
-                        <div className="mt-1 text-xs leading-5 text-slate-500">{file.description}</div>
-                      </a>
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="font-medium">{file.label}</div>
+                            <div className="mt-1 text-xs leading-5 text-slate-500">{file.description}</div>
+                          </div>
+                          <a
+                            className="shrink-0 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-medium text-[var(--accent-ink)] transition hover:opacity-85"
+                            download
+                            href={file.path}
+                          >
+                            開く / 保存
+                          </a>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
+
+              {previewableStarterFiles.length > 0 ? (
+                <div className="mt-4 rounded-[22px] bg-white/80 p-4">
+                  <div className="text-sm font-medium text-slate-700">素材プレビュー</div>
+                  <div className="mt-3 grid gap-4 xl:grid-cols-2">
+                    {previewableStarterFiles.map((file) => {
+                      const previewType = getPreviewType(file.path);
+
+                      return (
+                        <div key={file.path} className="overflow-hidden rounded-[20px] border border-black/5 bg-white">
+                          <div className="border-b border-black/5 px-4 py-3">
+                            <div className="font-medium text-[var(--navy)]">{file.label}</div>
+                            <div className="mt-1 text-xs leading-5 text-slate-500">{file.description}</div>
+                          </div>
+
+                          {previewType === "image" ? (
+                            <div className="bg-slate-50 p-4">
+                              <img
+                                alt={file.label}
+                                className="h-auto max-h-[420px] w-full rounded-[16px] border border-black/5 object-contain"
+                                src={file.path}
+                              />
+                            </div>
+                          ) : previewType === "pdf" ? (
+                            <div className="bg-slate-50 p-4">
+                              <iframe
+                                className="h-[420px] w-full rounded-[16px] border border-black/5 bg-white"
+                                src={`${file.path}#toolbar=0&navpanes=0&scrollbar=1`}
+                                title={file.label}
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
             </div>
           ) : null}
 

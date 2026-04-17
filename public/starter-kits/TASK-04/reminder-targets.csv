@@ -2,3 +2,20 @@ line_user_id,target_name,event_name,event_date,notify_7_days,notify_1_day
 U001,Patient A,Follow-up Visit,2026-04-23,true,true
 U002,Staff B,Night Shift,2026-04-18,true,true
 U003,Client C,Invoice Deadline,2026-04-24,true,true
+U004,Patient D,Home Visit,2026-04-25,true,true
+U005,Staff E,Early Shift,2026-04-20,true,true
+U006,Patient F,Regular Checkup,2026-04-27,true,true
+U007,Client G,Contract Renewal,2026-04-29,true,true
+U008,Staff H,Weekend Shift,2026-04-19,true,true
+U009,Patient I,Medication Reminder,2026-04-21,true,true
+U010,Client J,Payment Due,2026-04-26,true,true
+U011,Patient K,Rehab Visit,2026-04-30,true,true
+U012,Staff L,Late Shift,2026-04-22,true,true
+U013,Patient M,Consultation,2026-04-28,true,true
+U014,Client N,Document Submission,2026-04-23,true,true
+U015,Staff O,Training Session,2026-04-24,true,true
+U016,Patient P,Dental Check,2026-04-25,true,true
+U017,Client Q,Report Review,2026-04-26,true,true
+U018,Staff R,Support Duty,2026-04-27,true,true
+U019,Patient S,Follow-up Call,2026-04-28,true,true
+U020,Client T,Monthly Invoice,2026-04-30,true,true

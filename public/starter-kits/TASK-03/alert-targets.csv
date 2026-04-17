@@ -3,3 +3,19 @@ R001,Sato,follow_up,in_progress,2026-04-16,2026-04-10,
 R002,Suzuki,wakeup_check,pending,2026-04-17,2026-04-16,
 R003,Tanaka,follow_up,done,2026-04-20,2026-04-16,2026-04-16 08:40
 R004,Nakamura,departure_check,pending,2026-04-16,2026-04-15,
+R005,Kobayashi,follow_up,in_progress,2026-04-15,2026-04-09,
+R006,Takahashi,wakeup_check,done,2026-04-17,2026-04-17,2026-04-17 06:22
+R007,Inoue,follow_up,pending,2026-04-18,2026-04-11,
+R008,Yoshida,departure_check,in_progress,2026-04-16,2026-04-13,
+R009,Yamamoto,follow_up,pending,2026-04-14,2026-04-08,
+R010,Kato,wakeup_check,pending,2026-04-17,2026-04-16,
+R011,Sasaki,follow_up,done,2026-04-19,2026-04-17,2026-04-17 10:00
+R012,Aoki,departure_check,pending,2026-04-16,2026-04-14,
+R013,Matsuda,follow_up,in_progress,2026-04-18,2026-04-12,
+R014,Shimizu,wakeup_check,pending,2026-04-17,2026-04-16,
+R015,Fujita,follow_up,pending,2026-04-15,2026-04-07,
+R016,Morita,departure_check,done,2026-04-18,2026-04-16,2026-04-16 07:55
+R017,Okada,follow_up,in_progress,2026-04-17,2026-04-12,
+R018,Ishikawa,wakeup_check,pending,2026-04-17,2026-04-16,
+R019,Kondo,follow_up,pending,2026-04-19,2026-04-10,
+R020,Hasegawa,departure_check,in_progress,2026-04-16,2026-04-15,
