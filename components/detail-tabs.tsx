@@ -28,7 +28,7 @@ export function DetailTabs({
 
   return (
     <section className="panel rounded-[30px] p-5">
-      <div className="eyebrow text-xs text-slate-500">詳細表示</div>
+      <div className="eyebrow text-xs text-slate-600">詳細表示</div>
       <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-xl font-semibold text-[var(--navy)]">{title}</h3>
@@ -45,7 +45,7 @@ export function DetailTabs({
                   "rounded-full px-4 py-2 text-sm font-medium transition",
                   active
                     ? "bg-[var(--navy)] text-white"
-                    : "bg-white/80 text-slate-600 hover:bg-[var(--accent-soft)] hover:text-[var(--accent-ink)]",
+                    : "bg-white text-slate-800 ring-1 ring-black/5 hover:bg-[var(--accent-soft)] hover:text-[var(--navy)]",
                 )}
                 onClick={() => setActiveTabId(tab.id)}
                 type="button"
@@ -57,7 +57,7 @@ export function DetailTabs({
         </div>
       </div>
 
-      {activeTab.note ? <div className="mt-3 text-xs text-slate-500">{activeTab.note}</div> : null}
+      {activeTab.note ? <div className="mt-3 text-xs text-slate-600">{activeTab.note}</div> : null}
 
       <div className="mt-4">{activeTab.content}</div>
     </section>

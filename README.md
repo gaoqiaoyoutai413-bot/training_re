@@ -18,6 +18,7 @@ IT コンサル新人研修向けの、課題提出・レビュー・ナレッ�
 - [システム機能概要](docs/system-feature-overview.md)
 - [システム構成](docs/system-structure.md)
 - [ロール別にできること](docs/role-capabilities.md)
+- [課題一覧 詳細版](docs/task-catalog-detailed.md)
 
 ## システムの現在地
 
@@ -99,6 +100,7 @@ flowchart LR
 - [システム機能概要](docs/system-feature-overview.md)
 - [システム構成](docs/system-structure.md)
 - [ロール別にできること](docs/role-capabilities.md)
+- [課題一覧 詳細版](docs/task-catalog-detailed.md)
 
 ### 設計・仕様
 

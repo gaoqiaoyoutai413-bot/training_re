@@ -94,7 +94,7 @@ export function MentorReviewBoard() {
       <div className="panel rounded-[30px] p-4">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
           <label className="relative block">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <input
               className="w-full rounded-2xl border border-black/10 bg-white px-11 py-3 text-sm outline-none"
               onChange={(event) => setSearch(event.target.value)}
@@ -125,7 +125,7 @@ export function MentorReviewBoard() {
             <div className="p-6 text-sm text-slate-600">該当する提出はありません。</div>
           ) : (
             <table className="min-w-full border-collapse text-left">
-              <thead className="bg-white/80 text-xs uppercase tracking-[0.12em] text-slate-500">
+              <thead className="bg-white/90 text-xs uppercase tracking-[0.12em] text-slate-600">
                 <tr>
                   <th className="px-5 py-4">提出課題</th>
                   <th className="px-5 py-4">受講生</th>
@@ -142,16 +142,16 @@ export function MentorReviewBoard() {
                       <td className="px-5 py-4 font-medium text-[var(--navy)]">{submission.taskTitle ?? submission.taskCode}</td>
                       <td className="px-5 py-4">{submission.userName}</td>
                       <td className="px-5 py-4">{submission.assignedMentorName ?? "未設定"}</td>
-                      <td className="px-5 py-4 text-sm text-slate-600">{formatMonthDay(submission.submittedAt)}</td>
+                      <td className="px-5 py-4 text-sm text-slate-700">{formatMonthDay(submission.submittedAt)}</td>
                       <td className="px-5 py-4">
-                        <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs text-[var(--accent-ink)]">
+                        <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">
                           {submission.status}
                         </span>
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex flex-wrap gap-2">
                           {submission.assignedMentorId === profile?.id ? (
-                            <span className="inline-flex rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-medium text-[var(--accent-ink)]">
+                            <span className="inline-flex rounded-full bg-[var(--warning-soft)] px-3 py-1 text-xs font-medium text-[var(--warning)]">
                               自分が担当
                             </span>
                           ) : null}

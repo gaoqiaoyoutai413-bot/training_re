@@ -6,7 +6,7 @@ export function TaskAdminTable({ tasks }: { tasks: Task[] }) {
   return (
     <div className="panel overflow-hidden rounded-[30px]">
       <table className="min-w-full border-collapse text-left">
-        <thead className="bg-white/80 text-xs uppercase tracking-[0.12em] text-slate-500">
+        <thead className="bg-white/90 text-xs uppercase tracking-[0.12em] text-slate-600">
           <tr>
             <th className="px-5 py-4">Task</th>
             <th className="px-5 py-4">Category</th>
@@ -26,7 +26,7 @@ export function TaskAdminTable({ tasks }: { tasks: Task[] }) {
               <td className="px-5 py-4">{formatDifficulty(task.difficulty)}</td>
               <td className="px-5 py-4 text-sm text-slate-600">{task.businessImpact}</td>
               <td className="px-5 py-4">
-                <Link className="text-sm font-medium text-[var(--accent-ink)] underline-offset-4 hover:underline" href={`/quests/${task.taskCode}`}>
+                <Link className="inline-flex rounded-full bg-[var(--navy)] px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90" href={`/quests/${task.taskCode}`}>
                   詳細を見る
                 </Link>
               </td>

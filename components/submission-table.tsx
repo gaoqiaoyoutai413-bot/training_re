@@ -24,7 +24,7 @@ export function SubmissionTable({
   return (
     <div className="panel overflow-hidden rounded-[30px]">
       <table className="min-w-full border-collapse text-left">
-        <thead className="bg-white/80 text-xs uppercase tracking-[0.12em] text-slate-500">
+        <thead className="bg-white/90 text-xs uppercase tracking-[0.12em] text-slate-600">
           <tr>
             <th className="px-5 py-4">提出課題</th>
             <th className="px-5 py-4">受講生</th>
@@ -52,17 +52,17 @@ export function SubmissionTable({
               </td>
               <td className="px-5 py-4">{submission.userName}</td>
               {showAssignedMentor ? <td className="px-5 py-4">{submission.assignedMentorName ?? "未設定"}</td> : null}
-              {showSubmittedAt ? <td className="px-5 py-4 text-sm text-slate-600">{formatMonthDay(submission.submittedAt)}</td> : null}
+              {showSubmittedAt ? <td className="px-5 py-4 text-sm text-slate-700">{formatMonthDay(submission.submittedAt)}</td> : null}
               <td className="px-5 py-4">
-                <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs text-[var(--accent-ink)]">
+                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">
                   {submission.status}
                 </span>
               </td>
-              <td className="px-5 py-4 text-sm leading-6 text-slate-600">{submission.aiSummary}</td>
+              <td className="px-5 py-4 text-sm leading-6 text-slate-700">{submission.aiSummary}</td>
               {linkBasePath ? (
                 <td className="px-5 py-4">
                   <Link
-                    className="inline-flex rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-[var(--accent-ink)] transition hover:bg-white"
+                    className="inline-flex rounded-full bg-[var(--navy)] px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90"
                     href={`${linkBasePath}/${submission.id}`}
                   >
                     提出詳細を見る

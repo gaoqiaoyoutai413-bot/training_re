@@ -54,7 +54,7 @@ export function AppShell({
       <div className="mx-auto grid w-full max-w-[2160px] gap-6 lg:grid-cols-[236px_minmax(0,1fr)]">
         <aside className="panel rounded-[32px] border px-5 py-6">
           <div className="mb-8">
-            <div className="eyebrow mb-2 text-xs text-slate-500">Tech-Quest</div>
+            <div className="eyebrow mb-2 text-xs text-slate-600">Tech-Quest</div>
             <h1 className="text-[2rem] font-semibold leading-tight text-[var(--navy)]">研修運用を、見やすく一つに。</h1>
             <p className="mt-3 text-sm leading-6 text-slate-600">{roleCopy}</p>
           </div>
@@ -71,7 +71,7 @@ export function AppShell({
                   className={cn(
                     "flex items-center gap-3 rounded-2xl px-4 py-3 transition",
                     active
-                      ? "bg-[var(--accent-soft)] text-[var(--navy)] ring-1 ring-black/5"
+                      ? "bg-[var(--navy)] text-white shadow-sm"
                       : "text-slate-700 hover:bg-white/70",
                   )}
                 >
@@ -82,11 +82,11 @@ export function AppShell({
             })}
           </nav>
 
-          <div className="mt-8 rounded-[28px] bg-[var(--accent-soft)] p-4 text-sm text-[var(--accent-ink)]">
+          <div className="mt-8 rounded-[28px] bg-white p-4 text-sm text-slate-800 ring-1 ring-black/5">
             <div className="eyebrow text-xs">ログイン中</div>
             <p className="mt-2 font-medium">{profile?.name ?? "未ログイン"}</p>
-            <p className="mt-1 text-xs opacity-80">{profile?.email}</p>
-            <p className="mt-1 text-xs opacity-80">ロール: {profile?.role ?? "未設定"}</p>
+            <p className="mt-1 text-xs text-slate-600">{profile?.email}</p>
+            <p className="mt-1 text-xs text-slate-600">ロール: {profile?.role ?? "未設定"}</p>
             <button
               className="mt-4 rounded-full bg-[var(--navy)] px-4 py-2 text-xs font-medium text-white transition hover:opacity-90"
               onClick={() => {
