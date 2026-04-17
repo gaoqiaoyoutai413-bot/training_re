@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { AiReviewPanel } from "@/components/ai-review-panel";
 import { AppShell } from "@/components/app-shell";
 import { DetailTabs } from "@/components/detail-tabs";
+import { DriveExportCard } from "@/components/drive-export-card";
 import { KnowledgePublishForm } from "@/components/knowledge-publish-form";
 import { MentorReviewForm } from "@/components/mentor-review-form";
 import { ReviewScoreCard } from "@/components/review-score-card";
@@ -193,6 +194,7 @@ export default async function MentorReviewDetailPage({
         </section>
 
         <section className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+          <DriveExportCard submission={submission} />
           <KnowledgePublishForm submission={submission} taskTitle={taskTitle} />
           {mentorReview ? <ReviewScoreCard review={mentorReview} submission={submission} /> : <MentorReviewForm submissionId={submission.id} submissionUserId={submission.userId} />}
         </section>

@@ -22,6 +22,7 @@
 | Step6 管理者運用ルール | 実装済み | admin 管理、初回 student、mentor 昇格は admin |
 | Step7 Google Docs 出力ルール | 実装済み | 要件定義書 / 設計書 / 社内説明用サマリーを admin が出力可能 |
 | Step8 データ保持ルール | 一部実装済み | inactive / retired の利用状態管理は実装済み、物理削除は admin 個別対応のまま |
+| Step10-19 Google Drive 退避ルール | 実装済み | passed 時自動退避、failed 保持、admin 再実行、詳細画面表示まで実装 |
 
 ## 3. 項目別チェック
 
@@ -203,6 +204,35 @@
 
 - 物理削除や個別削除依頼対応の UI は未実装
 - 削除対応は引き続き admin の個別判断
+
+### 3-9. Step10-19 Google Drive 退避ルール
+
+**方針**
+
+- 合格提出のみ Google Drive へ退避
+- 退避対象は `README / モック画像 / コードファイル`
+- フォルダ構成は `大元 / 課題コード_課題名 / 氏名_日付`
+- `failed` 時はエラー保持と Slack 通知
+- `admin` が再実行可能
+
+**現状**
+
+- [supabase/migrations/0013_add_submission_drive_export_fields.sql](../supabase/migrations/0013_add_submission_drive_export_fields.sql)
+  で Drive 退避管理項目を追加
+- [lib/google-drive-archive.ts](../lib/google-drive-archive.ts)
+  で Service Account による Google Drive 退避を実装
+- [app/api/reviews/route.ts](../app/api/reviews/route.ts)
+  で `passed` 時の自動退避を実装
+- [app/api/submissions/[id]/drive-export/route.ts](../app/api/submissions/%5Bid%5D/drive-export/route.ts)
+  で admin 再実行 API を実装
+- [components/drive-export-card.tsx](../components/drive-export-card.tsx)
+  と詳細画面で Drive 退避状態を表示
+- [lib/slack-notify.ts](../lib/slack-notify.ts)
+  で退避失敗通知を追加
+
+**状態**
+
+- 実装済み
 
 ## 4. 次に着手すべき優先順
 

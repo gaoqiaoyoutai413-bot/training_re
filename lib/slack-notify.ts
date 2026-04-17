@@ -177,3 +177,22 @@ export async function sendMentorReviewedDirectMessage(input: {
     ],
   });
 }
+
+export async function sendDriveExportFailedSlackNotification(input: {
+  submissionId: string;
+  taskCode: string;
+  taskTitle?: string | null;
+  learnerName: string;
+  errorMessage: string;
+}) {
+  return sendSlackNotification({
+    title: "Google Drive 退避に失敗しました",
+    bodyLines: [
+      `課題: ${input.taskTitle ?? input.taskCode} (${input.taskCode})`,
+      `受講生: ${input.learnerName}`,
+      `提出ID: ${input.submissionId}`,
+      `エラー: ${input.errorMessage}`,
+      "admin は提出詳細画面から再実行してください。",
+    ],
+  });
+}

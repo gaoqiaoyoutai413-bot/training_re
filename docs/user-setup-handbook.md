@@ -991,12 +991,69 @@ Slack 通知は次のタイミングで送られます。
 - TASK-06 には NotebookLM 用のサンプル PDF を入れています
 - TASK-08 には OCR 用のサンプル請求書 / 領収書画像を入れています
 
-## 21. おすすめの次の進め方
+## 21. Google Drive 退避 migration の反映
+
+合格提出を Google Drive へ自動退避するための migration です。
+
+やること:
+
+1. Supabase の `SQL Editor` を開く
+2. [0013_add_submission_drive_export_fields.sql](../supabase/migrations/0013_add_submission_drive_export_fields.sql) を実行する
+
+確認ポイント:
+
+- `public.submissions` に以下の列が追加される
+  - `drive_folder_id`
+  - `drive_export_status`
+  - `drive_exported_at`
+  - `drive_export_error`
+
+## 22. Google Drive 退避を使うための事前準備
+
+必要な環境変数:
+
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+- `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
+- `GOOGLE_DRIVE_FOLDER_ID`
+
+やること:
+
+1. Google Drive に大元フォルダを作る
+2. そのフォルダを Service Account のメールアドレスへ共有する
+3. `.env.local` に上記 3 つを設定する
+
+運用仕様:
+
+- `passed` になった提出のみ自動退避
+- 保存先は `大元フォルダ / 課題コード_課題名 / 氏名_日付`
+- 保存するのは `README / モック画像 / コードファイル`
+
+## 23. Google Drive 退避の確認方法
+
+1. mentor で提出を `passed` にする
+2. 提出詳細またはレビュー詳細を開く
+3. `Drive 退避` カードで状態を確認する
+
+期待する状態:
+
+- 成功時
+  - `exported`
+  - Drive フォルダリンク表示
+- 失敗時
+  - `failed`
+  - エラー内容表示
+  - Slack のレビュー用チャンネルへ通知
+
+admin 向け:
+
+- `Drive 退避を再実行` ボタンを使える
+
+## 24. おすすめの次の進め方
 
 迷う場合は、次の順がおすすめです。
 
 1. Slack 通知の動作確認
-2. スターターセットの内容を課題ごとに調整する
-3. ナレッジ共有を本番化する
+2. Google Drive 退避の動作確認
+3. スターターセットの内容を課題ごとに調整する
 
 この順で進めると、運用開始に必要な土台がかなり固まります。

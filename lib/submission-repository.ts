@@ -17,6 +17,10 @@ interface SubmissionBaseRow {
   source_code_url: string;
   business_value_text: string;
   submitted_at: string;
+  drive_folder_id: string | null;
+  drive_export_status: "pending" | "exported" | "failed" | null;
+  drive_exported_at: string | null;
+  drive_export_error: string | null;
 }
 
 interface ProfileRow {
@@ -261,6 +265,10 @@ async function assembleSubmissions(baseRows: SubmissionBaseRow[]) {
       assignedMentorId,
       assignedMentorName: assignedMentor?.name ?? null,
       aiSummary: aiReview?.summary ?? "AIレビュー未実行",
+      driveFolderId: row.drive_folder_id,
+      driveExportStatus: row.drive_export_status,
+      driveExportedAt: row.drive_exported_at,
+      driveExportError: row.drive_export_error,
     } satisfies Submission;
   });
 }
@@ -274,7 +282,7 @@ export async function getSubmissionList(options: SubmissionListOptions = {}) {
 
   let query = supabase
     .from("submissions")
-    .select("id, task_id, task_version, user_id, assigned_mentor_id, status, source_code_url, business_value_text, submitted_at")
+    .select("id, task_id, task_version, user_id, assigned_mentor_id, status, source_code_url, business_value_text, submitted_at, drive_folder_id, drive_export_status, drive_exported_at, drive_export_error")
     .order("submitted_at", { ascending: false });
 
   if (options.scope === "mine" && options.viewerProfileId) {
@@ -321,7 +329,7 @@ export async function getSubmissionDetail(submissionId: string): Promise<Submiss
 
   const { data: submissionRow, error: submissionError } = await supabase
     .from("submissions")
-    .select("id, task_id, task_version, user_id, assigned_mentor_id, status, source_code_url, business_value_text, submitted_at")
+    .select("id, task_id, task_version, user_id, assigned_mentor_id, status, source_code_url, business_value_text, submitted_at, drive_folder_id, drive_export_status, drive_exported_at, drive_export_error")
     .eq("id", submissionId)
     .maybeSingle();
 

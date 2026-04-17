@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { AiReviewPanel } from "@/components/ai-review-panel";
 import { AppShell } from "@/components/app-shell";
 import { DetailTabs } from "@/components/detail-tabs";
+import { DriveExportCard } from "@/components/drive-export-card";
 import { ReviewScoreCard } from "@/components/review-score-card";
 import { SectionHeading } from "@/components/section-heading";
 import { formatMonthDay } from "@/lib/date-format";
@@ -187,6 +188,7 @@ export default async function SubmissionDetailPage({
         </section>
 
         <section className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+          <DriveExportCard submission={submission} />
           {mentorReview ? <ReviewScoreCard review={mentorReview} submission={submission} /> : null}
         </section>
       </div>

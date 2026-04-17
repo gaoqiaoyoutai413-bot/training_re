@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+import { exportSubmissionToDrive } from "@/lib/google-drive-archive";
 import { getSlackIdByEmail } from "@/lib/member-directory";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { getSubmissionList } from "@/lib/submission-repository";
-import { sendMentorReviewedDirectMessage, sendMentorReviewedSlackNotification } from "@/lib/slack-notify";
+import {
+  sendDriveExportFailedSlackNotification,
+  sendMentorReviewedDirectMessage,
+  sendMentorReviewedSlackNotification,
+} from "@/lib/slack-notify";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
@@ -67,7 +72,7 @@ export async function POST(request: Request) {
   const { data: submission, error: submissionError } = await supabase
     .from("submissions")
     .select(
-      "id, user_id, review_task:tasks!submissions_task_id_fkey(task_code, title), learner_profile:profiles!submissions_user_id_fkey(name, email)",
+      "id, user_id, submitted_at, business_value_text, source_code_url, review_task:tasks!submissions_task_id_fkey(task_code, title), learner_profile:profiles!submissions_user_id_fkey(name, email), drive_export_status",
     )
     .eq("id", submissionId)
     .maybeSingle();
@@ -98,7 +103,12 @@ export async function POST(request: Request) {
 
   const { error: submissionUpdateError } = await supabase
     .from("submissions")
-    .update({ status: result })
+    .update({
+      status: result,
+      ...(result === "passed" && submission.drive_export_status !== "exported"
+        ? { drive_export_status: "pending", drive_export_error: null }
+        : {}),
+    })
     .eq("id", submissionId);
 
   if (submissionUpdateError) {
@@ -131,6 +141,48 @@ export async function POST(request: Request) {
           result: result as "passed" | "rework_requested",
           technicalScore,
           businessScore,
+        });
+      }
+    }
+
+    if (result === "passed" && submission.drive_export_status !== "exported" && profile?.name) {
+      try {
+        const exportResult = await exportSubmissionToDrive({
+          submissionId,
+          taskCode: task?.task_code ?? "UNKNOWN",
+          taskTitle: task?.title ?? null,
+          userName: profile.name,
+          submittedAt: submission.submitted_at,
+          readmeContent: submission.business_value_text,
+          sourceCodeUrl: submission.source_code_url || null,
+        });
+
+        await supabase
+          .from("submissions")
+          .update({
+            drive_folder_id: exportResult.folderId,
+            drive_export_status: "exported",
+            drive_exported_at: new Date().toISOString(),
+            drive_export_error: null,
+          })
+          .eq("id", submissionId);
+      } catch (driveError) {
+        const errorMessage = driveError instanceof Error ? driveError.message : "Drive 退避に失敗しました。";
+
+        await supabase
+          .from("submissions")
+          .update({
+            drive_export_status: "failed",
+            drive_export_error: errorMessage,
+          })
+          .eq("id", submissionId);
+
+        await sendDriveExportFailedSlackNotification({
+          submissionId,
+          taskCode: task?.task_code ?? "UNKNOWN",
+          taskTitle: task?.title ?? null,
+          learnerName: profile.name,
+          errorMessage,
         });
       }
     }

@@ -78,7 +78,71 @@
 - 退職後はログイン不可にするが、提出履歴は内部保持する
 - 削除は `admin` 判断で個別対応する
 
-## 6. 本番運用時の前提
+## 6. Google Drive 退避ルール
+
+### Step 10. 退避対象
+
+- 合格提出は Google Drive の大元フォルダ配下へ退避する
+- フォルダ構成
+  - 大元フォルダ
+  - `課題コード_課題名`
+  - `氏名_日付`
+
+### Step 11. 連携方式
+
+- Google Service Account で Drive API を呼ぶ
+- 大元フォルダを Service Account に共有する
+- `passed` になった提出のみ自動退避する
+
+### Step 12. DB 上の保持項目
+
+- `submissions.drive_folder_id`
+- `submissions.drive_export_status`
+- `submissions.drive_exported_at`
+- `submissions.drive_export_error`
+
+### Step 13. 実行タイミング
+
+- mentor 評価で `passed` になった瞬間に自動実行する
+- 失敗時は `failed` で保持する
+- `admin` が再実行できるようにする
+
+### Step 14. フォルダ構成
+
+- Drive の構成は
+  - 大元フォルダ
+  - `課題コード_課題名`
+  - `氏名_日付`
+  とする
+
+### Step 15. ファイル名ルール
+
+- `README.md`
+- `mock-連番`
+- `code-連番 + 元拡張子`
+
+### Step 17. 退避対象ファイル
+
+- Drive へ退避するのは以下のみとする
+  - README
+  - モック画像
+  - コードファイル
+- AIレビューやメンター評価はシステム側を正本にする
+
+### Step 18. 失敗時の扱い
+
+- 失敗時は `failed` と `drive_export_error` を保存する
+- レビュー用チャンネルへ通知する
+- `admin` が提出詳細画面から再実行できるようにする
+
+### Step 19. 実装方針
+
+- `submissions` に Drive 管理項目を追加する
+- `passed` 時の自動退避を実装する
+- `admin` 再実行 API を持つ
+- 提出詳細に Drive 退避状態を表示する
+
+## 7. 本番運用時の前提
 
 本番運用では以下を前提とします。
 
@@ -88,7 +152,7 @@
 - admin は運用統制の役割に限定する
 - Google Docs は配布用資料であり、原本管理先ではない
 
-## 7. 今後の実装・運用反映ポイント
+## 8. 今後の実装・運用反映ポイント
 
 このポリシーに基づいて、今後は以下をシステムへより明示的に反映していく。
 

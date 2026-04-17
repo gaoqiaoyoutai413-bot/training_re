@@ -122,6 +122,10 @@ export interface Submission {
   technicalScore?: number;
   businessScore?: number;
   aiSummary?: string;
+  driveFolderId?: string | null;
+  driveExportStatus?: "pending" | "exported" | "failed" | null;
+  driveExportedAt?: string | null;
+  driveExportError?: string | null;
 }
 
 export interface SubmissionFileRecord {
