@@ -102,6 +102,52 @@ function mapAiReviewRow(row: AiReviewRow): AiReviewRecord {
   const raw = row.raw_result_json ?? {};
   const findings = Array.isArray(raw.findings) ? raw.findings : [];
   const mentorFlags = Array.isArray(raw.mentorFlags) ? raw.mentorFlags.filter((item): item is string => typeof item === "string") : [];
+  const acceptanceChecks = Array.isArray(raw.acceptanceChecks)
+    ? raw.acceptanceChecks.flatMap((item) => {
+        if (!item || typeof item !== "object") {
+          return [];
+        }
+        const candidate = item as Record<string, unknown>;
+        if (
+          (candidate.status !== "met" &&
+            candidate.status !== "partial" &&
+            candidate.status !== "missing" &&
+            candidate.status !== "unclear") ||
+          typeof candidate.label !== "string" ||
+          typeof candidate.comment !== "string"
+        ) {
+          return [];
+        }
+        return [
+          {
+            label: candidate.label,
+            status: candidate.status as "met" | "partial" | "missing" | "unclear",
+            comment: candidate.comment,
+          },
+        ];
+      })
+    : [];
+  const overallAssessment =
+    raw.overallAssessment === "strong" ||
+    raw.overallAssessment === "borderline" ||
+    raw.overallAssessment === "needs_revision" ||
+    raw.overallAssessment === "major_revision"
+      ? raw.overallAssessment
+      : acceptanceChecks.some((check) => check.status === "missing") || findings.some((finding) => finding.severity === "high")
+        ? "major_revision"
+        : acceptanceChecks.some((check) => check.status === "partial" || check.status === "unclear")
+          ? "needs_revision"
+          : "borderline";
+  const assessmentReason =
+    typeof raw.assessmentReason === "string"
+      ? raw.assessmentReason
+      : overallAssessment === "major_revision"
+        ? "要件不足または重大な懸念があり、修正優先の提出です。"
+        : overallAssessment === "needs_revision"
+          ? "方向性はあるものの、追加修正が必要です。"
+          : overallAssessment === "strong"
+            ? "メンター確認に進めやすい提出です。"
+            : "致命的ではないものの、補足確認が必要です。";
 
   return {
     modelName: row.model_name,
@@ -109,32 +155,10 @@ function mapAiReviewRow(row: AiReviewRow): AiReviewRecord {
     securityScore: Number(row.security_score ?? 0),
     readabilityScore: Number(row.readability_score ?? 0),
     businessLogicScore: Number(row.business_logic_score ?? 0),
+    overallAssessment,
+    assessmentReason,
     summary: row.summary ?? "AIレビュー未実行",
-    acceptanceChecks: Array.isArray(raw.acceptanceChecks)
-      ? raw.acceptanceChecks.flatMap((item) => {
-          if (!item || typeof item !== "object") {
-            return [];
-          }
-          const candidate = item as Record<string, unknown>;
-          if (
-            (candidate.status !== "met" &&
-              candidate.status !== "partial" &&
-              candidate.status !== "missing" &&
-              candidate.status !== "unclear") ||
-            typeof candidate.label !== "string" ||
-            typeof candidate.comment !== "string"
-          ) {
-            return [];
-          }
-          return [
-            {
-              label: candidate.label,
-              status: candidate.status,
-              comment: candidate.comment,
-            },
-          ];
-        })
-      : [],
+    acceptanceChecks,
     findings: findings.flatMap((item) => {
       if (!item || typeof item !== "object") {
         return [];

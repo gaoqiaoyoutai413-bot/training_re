@@ -53,6 +53,8 @@ export interface AiReviewRecord {
   securityScore: number;
   readabilityScore: number;
   businessLogicScore: number;
+  overallAssessment: "strong" | "borderline" | "needs_revision" | "major_revision";
+  assessmentReason: string;
   summary: string;
   acceptanceChecks: AiAcceptanceCheck[];
   findings: AiReviewFinding[];

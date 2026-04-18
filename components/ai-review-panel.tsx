@@ -31,6 +31,20 @@ function acceptanceStatusTone(value: string) {
   return "bg-slate-100 text-slate-600";
 }
 
+function assessmentLabel(value: AiReviewRecord["overallAssessment"]) {
+  if (value === "strong") return "メンター確認に進めやすい";
+  if (value === "borderline") return "追加確認が必要";
+  if (value === "needs_revision") return "修正推奨";
+  return "大幅修正推奨";
+}
+
+function assessmentTone(value: AiReviewRecord["overallAssessment"]) {
+  if (value === "strong") return "bg-emerald-50 text-emerald-700";
+  if (value === "borderline") return "bg-sky-50 text-sky-700";
+  if (value === "needs_revision") return "bg-amber-50 text-amber-700";
+  return "bg-rose-50 text-rose-700";
+}
+
 export function AiReviewPanel({
   submissionId,
   review,
@@ -56,6 +70,9 @@ export function AiReviewPanel({
             課題 rubric と提出内容をもとに、セキュリティ・可読性・ビジネス価値の3観点で一次レビューします。
           </p>
           <p className="mt-2 text-xs leading-5 text-slate-500">AIレビューは参考情報です。合格・差し戻しの最終判定はメンターが行います。</p>
+          <p className="mt-2 text-xs leading-5 text-slate-500">
+            採点は厳しめです。4点以上は「根拠が十分で大きな懸念が少ない」場合に限定し、必須要件の不足や重大指摘があると低く抑えます。
+          </p>
         </div>
         <button
           className="rounded-full bg-[var(--navy)] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
@@ -113,6 +130,22 @@ export function AiReviewPanel({
             <div className="rounded-[20px] bg-white/80 p-4">
               <div className="text-xs text-slate-500">指摘件数</div>
               <div className="mt-2 text-3xl font-semibold text-[var(--navy)]">{findings.length}</div>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-[20px] bg-white/80 p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-[var(--navy)]">AI評価の見立て</span>
+              <span className={`rounded-full px-3 py-1 text-xs ${assessmentTone(review.overallAssessment)}`}>
+                {assessmentLabel(review.overallAssessment)}
+              </span>
+            </div>
+            <div className="mt-2 text-sm leading-6 text-slate-600">{review.assessmentReason}</div>
+            <div className="mt-3 grid gap-2 text-xs leading-5 text-slate-500 md:grid-cols-2">
+              <div className="rounded-[16px] bg-[var(--sand)] px-3 py-2">4-5点: 根拠が十分で重大懸念が少ない</div>
+              <div className="rounded-[16px] bg-[var(--sand)] px-3 py-2">3点: 方向性は良いが補足や修正が必要</div>
+              <div className="rounded-[16px] bg-[var(--sand)] px-3 py-2">2点: 不足が複数あり再提出レベル</div>
+              <div className="rounded-[16px] bg-[var(--sand)] px-3 py-2">0-1点: 根拠不足または重大な問題あり</div>
             </div>
           </div>
 
