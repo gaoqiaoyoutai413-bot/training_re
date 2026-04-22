@@ -3,6 +3,8 @@ import {
   anonymizeEmail,
   anonymizeName,
 } from "@/lib/demo-anonymizer";
+import { getDemoAssignmentRoster, getDemoLearnerSnapshots } from "@/lib/demo-data";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { LearnerSnapshot, SkillScores, SubmissionStatus } from "@/types/domain";
 
@@ -51,6 +53,10 @@ function getFocusArea(skills: SkillScores) {
 }
 
 export async function getLearnerSnapshots(): Promise<LearnerSnapshot[]> {
+  if (DEMO_MODE) {
+    return getDemoLearnerSnapshots();
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
@@ -139,6 +145,10 @@ export async function getAssignmentRoster(): Promise<{
   learners: LearnerSnapshot[];
   mentors: Array<{ id: string; name: string; email: string }>;
 }> {
+  if (DEMO_MODE) {
+    return getDemoAssignmentRoster();
+  }
+
   const snapshots = await getLearnerSnapshots();
   const supabase = createServerSupabaseClient();
 

@@ -1,3 +1,5 @@
+import { getDemoDashboardMetrics, getDemoTasks } from "@/lib/demo-data";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getTasks } from "@/lib/task-repository";
 import type { DashboardMetrics, SkillScores, SubmissionStatus } from "@/types/domain";
@@ -39,6 +41,10 @@ function clampSkillScores(scores: SkillScores): SkillScores {
 }
 
 export async function getDashboardMetricsForUser(profileId: string): Promise<DashboardMetrics> {
+  if (DEMO_MODE) {
+    return getDemoDashboardMetrics();
+  }
+
   const supabase = createServerSupabaseClient();
   const tasks = await getTasks();
 
@@ -106,6 +112,14 @@ export async function getDashboardMetricsForUser(profileId: string): Promise<Das
 }
 
 export async function getPlatformOverviewMetrics() {
+  if (DEMO_MODE) {
+    return {
+      taskCount: getDemoTasks().length,
+      inReviewCount: 2,
+      knowledgeCount: 2,
+    };
+  }
+
   const supabase = createServerSupabaseClient();
   const tasks = await getTasks();
 

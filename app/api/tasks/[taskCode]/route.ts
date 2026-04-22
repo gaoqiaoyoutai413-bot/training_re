@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { getTaskByTaskCode, updateTaskByTaskCode } from "@/lib/task-repository";
 
@@ -24,6 +25,10 @@ export async function PATCH(
 
   if (authorized.error) {
     return NextResponse.json({ message: authorized.error }, { status: authorized.status });
+  }
+
+  if (DEMO_MODE) {
+    return NextResponse.json({ message: "デモモードのため、課題編集は保存せず成功表示のみ返しています。" });
   }
 
   const { taskCode } = await params;

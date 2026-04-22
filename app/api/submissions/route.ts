@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { getSubmissionList } from "@/lib/submission-repository";
 import { sendSubmissionCreatedSlackNotification } from "@/lib/slack-notify";
@@ -27,6 +28,17 @@ export async function POST(request: Request) {
 
   if (authorized.error || !authorized.profile) {
     return NextResponse.json({ message: authorized.error ?? "認証に失敗しました。" }, { status: authorized.status });
+  }
+
+  if (DEMO_MODE) {
+    return NextResponse.json(
+      {
+        status: "accepted",
+        message: "デモモードのため、提出は保存せず成功メッセージのみ表示しています。",
+        submissionId: "demo-submission-created",
+      },
+      { status: 201 },
+    );
   }
 
   const supabase = createServerSupabaseClient();

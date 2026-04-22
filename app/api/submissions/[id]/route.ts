@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { getSubmissionDetail } from "@/lib/submission-repository";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -27,6 +28,18 @@ export async function PATCH(
 
   if (authorized.error || !authorized.profile) {
     return NextResponse.json({ message: authorized.error ?? "認証に失敗しました。" }, { status: authorized.status });
+  }
+
+  if (DEMO_MODE) {
+    const body = (await request.json()) as { action?: string };
+    const action = String(body.action ?? "");
+    return NextResponse.json({
+      message:
+        action === "clear_assignment"
+          ? "デモモードのため、担当解除を成功表示のみ行いました。"
+          : "デモモードのため、担当変更を成功表示のみ行いました。",
+      assignedMentorId: action === "clear_assignment" ? null : authorized.profile.id,
+    });
   }
 
   const supabase = createServerSupabaseClient();

@@ -1,3 +1,5 @@
+import { getDemoTaskByTaskCode, getDemoTasks } from "@/lib/demo-data";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { taskStarterKits } from "@/lib/task-starter-kits";
 import type {
@@ -203,6 +205,10 @@ function mapTaskRow(row: TaskRow): Task {
 }
 
 export async function getTasks() {
+  if (DEMO_MODE) {
+    return getDemoTasks();
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
@@ -242,11 +248,19 @@ export async function getTasks() {
 }
 
 export async function getTaskByTaskCode(taskCode: string) {
+  if (DEMO_MODE) {
+    return getDemoTaskByTaskCode(taskCode);
+  }
+
   const taskList = await getTasks();
   return taskList.find((task) => task.taskCode === taskCode) ?? null;
 }
 
 export async function updateTaskByTaskCode(taskCode: string, input: TaskUpdateInput) {
+  if (DEMO_MODE) {
+    return { error: null };
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { getDemoAiReview } from "@/lib/demo-data";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { runGeminiAiReview } from "@/lib/gemini-review";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { getSubmissionDetail } from "@/lib/submission-repository";
@@ -11,6 +13,15 @@ export async function POST(request: Request) {
 
   if (authorized.error || !authorized.profile) {
     return NextResponse.json({ message: authorized.error ?? "認証に失敗しました。" }, { status: authorized.status });
+  }
+
+  if (DEMO_MODE) {
+    const body = (await request.json()) as { submissionId?: string };
+    const submissionId = String(body.submissionId ?? "").trim();
+    return NextResponse.json({
+      message: "デモモードのため、固定の AIレビュー結果を返しています。",
+      review: submissionId ? getDemoAiReview(submissionId) : null,
+    });
   }
 
   const supabase = createServerSupabaseClient();

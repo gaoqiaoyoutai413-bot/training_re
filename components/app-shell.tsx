@@ -34,6 +34,18 @@ const sectionsByRole: Record<UserRole, Array<{ href: string; label: string; icon
   ],
 };
 
+const demoSections = [
+  { href: "/", label: "ホーム", icon: Home },
+  { href: "/quests", label: "課題一覧", icon: FolderKanban },
+  { href: "/submissions/new", label: "課題提出", icon: Send },
+  { href: "/submissions", label: "提出状況", icon: FileText },
+  { href: "/knowledge", label: "ナレッジ", icon: BookOpen },
+  { href: "/mentor/assignments", label: "担当設定", icon: UserCog },
+  { href: "/mentor/reviews", label: "提出レビュー", icon: ClipboardCheck },
+  { href: "/admin/tasks", label: "課題管理", icon: ListChecks },
+  { href: "/admin/learners", label: "ユーザー管理", icon: Users },
+];
+
 export function AppShell({
   children,
   currentPath,
@@ -42,9 +54,10 @@ export function AppShell({
   currentPath: string;
 }) {
   const { profile, signOut } = useAuth();
-  const visibleSections = profile ? sectionsByRole[profile.role] : [];
-  const roleCopy =
-    profile?.role === "student"
+  const visibleSections = DEMO_MODE ? demoSections : profile ? sectionsByRole[profile.role] : [];
+  const roleCopy = DEMO_MODE
+    ? "デモ表示ではロールに関係なく、課題提出からレビュー、管理画面まで一通り確認できます。"
+    : profile?.role === "student"
       ? "課題を選び、提出して、返却を確認する流れに絞っています。"
       : profile?.role === "mentor"
         ? "提出とレビューの両方を、この画面群だけで進められる構成です。"

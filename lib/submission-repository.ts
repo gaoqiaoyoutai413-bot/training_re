@@ -3,6 +3,8 @@ import {
   sanitizeTextForDemo,
   sanitizeUrlForDemo,
 } from "@/lib/demo-anonymizer";
+import { getDemoSubmissionDetail, getDemoSubmissionList } from "@/lib/demo-data";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   AiReviewRecord,
@@ -320,6 +322,10 @@ async function assembleSubmissions(baseRows: SubmissionBaseRow[]) {
 }
 
 export async function getSubmissionList(options: SubmissionListOptions = {}) {
+  if (DEMO_MODE) {
+    return getDemoSubmissionList(options);
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
@@ -367,6 +373,10 @@ export async function getSubmissionList(options: SubmissionListOptions = {}) {
 }
 
 export async function getSubmissionDetail(submissionId: string): Promise<SubmissionDetailRecord | null> {
+  if (DEMO_MODE) {
+    return getDemoSubmissionDetail(submissionId);
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

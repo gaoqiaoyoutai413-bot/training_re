@@ -28,6 +28,10 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const publicPaths = new Set(["/login", "/auth/callback"]);
 
 function canAccess(role: UserRole | null, pathname: string) {
+  if (DEMO_MODE) {
+    return true;
+  }
+
   if (publicPaths.has(pathname)) {
     return true;
   }

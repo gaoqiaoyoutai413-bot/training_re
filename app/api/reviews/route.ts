@@ -38,6 +38,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: authorized.error ?? "認証に失敗しました。" }, { status: authorized.status });
   }
 
+  if (DEMO_MODE) {
+    return NextResponse.json({ message: "デモモードのため、レビュー保存は行わず成功表示のみ返しています。" }, { status: 201 });
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

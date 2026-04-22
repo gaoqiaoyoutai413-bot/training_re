@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { getLearnerSnapshots } from "@/lib/learner-repository";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -20,6 +21,10 @@ export async function PATCH(request: Request) {
 
   if (authorized.error) {
     return NextResponse.json({ message: authorized.error }, { status: authorized.status });
+  }
+
+  if (DEMO_MODE) {
+    return NextResponse.json({ message: "デモモードのため、表示上のみ更新成功として扱います。" });
   }
 
   const supabase = createServerSupabaseClient();

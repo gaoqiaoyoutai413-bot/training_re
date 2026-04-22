@@ -1,4 +1,10 @@
 import { sanitizeTextForDemo, sanitizeUrlForDemo } from "@/lib/demo-anonymizer";
+import {
+  getDemoKnowledgeEntries,
+  getDemoKnowledgeEntriesByTaskCode,
+  getDemoKnowledgeTaskGroups,
+} from "@/lib/demo-data";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   KnowledgeEntry,
@@ -129,6 +135,10 @@ async function buildSignedImageAssets(
 }
 
 export async function getKnowledgeEntries(): Promise<KnowledgeEntry[]> {
+  if (DEMO_MODE) {
+    return getDemoKnowledgeEntries();
+  }
+
   const { rows } = await fetchKnowledgeRows();
 
   if (rows.length === 0) {
@@ -139,6 +149,10 @@ export async function getKnowledgeEntries(): Promise<KnowledgeEntry[]> {
 }
 
 export async function getKnowledgeTaskGroups(): Promise<KnowledgeTaskGroup[]> {
+  if (DEMO_MODE) {
+    return getDemoKnowledgeTaskGroups();
+  }
+
   const entries = await getKnowledgeEntries();
 
   if (entries.length === 0) {
@@ -179,6 +193,10 @@ export async function getKnowledgeTaskGroups(): Promise<KnowledgeTaskGroup[]> {
 }
 
 export async function getKnowledgeEntriesByTaskCode(taskCode: string): Promise<KnowledgeEntryDetail[]> {
+  if (DEMO_MODE) {
+    return getDemoKnowledgeEntriesByTaskCode(taskCode);
+  }
+
   const { supabase, rows } = await fetchKnowledgeRows();
 
   if (!supabase || rows.length === 0) {
