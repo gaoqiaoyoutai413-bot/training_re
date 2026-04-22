@@ -1,3 +1,8 @@
+import {
+  anonymizeAccountStatus,
+  anonymizeEmail,
+  anonymizeName,
+} from "@/lib/demo-anonymizer";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { LearnerSnapshot, SkillScores, SubmissionStatus } from "@/types/domain";
 
@@ -110,11 +115,11 @@ export async function getLearnerSnapshots(): Promise<LearnerSnapshot[]> {
 
     return {
       id: profile.id,
-      name: profile.name,
-      email: profile.email,
+      name: anonymizeName({ id: profile.id, name: profile.name, email: profile.email, role: profile.role }),
+      email: anonymizeEmail({ id: profile.id, name: profile.name, email: profile.email, role: profile.role }),
       batchCode: null,
       role: profile.role,
-      accountStatus: profile.account_status ?? "active",
+      accountStatus: anonymizeAccountStatus(profile.account_status),
       assignedMentorId: profile.assigned_mentor_id ?? null,
       assignedMentorName: null,
       submissionCount: stats.submissionCount,
@@ -169,7 +174,14 @@ export async function getAssignmentRoster(): Promise<{
       .filter((item) => item.role !== "admin")
       .map((item) => ({
         ...item,
-        assignedMentorName: item.assignedMentorId ? assignedMentorMap.get(item.assignedMentorId)?.name ?? null : null,
+        assignedMentorName: item.assignedMentorId
+          ? anonymizeName({
+              id: item.assignedMentorId,
+              name: assignedMentorMap.get(item.assignedMentorId)?.name ?? null,
+              email: assignedMentorMap.get(item.assignedMentorId)?.email ?? null,
+              role: "mentor",
+            })
+          : null,
       })),
     mentors,
   };

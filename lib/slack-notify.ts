@@ -1,3 +1,5 @@
+import { DEMO_MODE } from "@/lib/demo-mode";
+
 type SlackNotifyPayload = {
   title: string;
   bodyLines: string[];
@@ -66,6 +68,10 @@ async function openDirectMessageChannel(userSlackId: string, botToken: string) {
 }
 
 export async function sendSlackNotification(payload: SlackNotifyPayload) {
+  if (DEMO_MODE) {
+    return { ok: true as const, skipped: true as const, reason: "デモモードでは Slack 通知を送信しません。" };
+  }
+
   const config = getSlackConfig();
 
   if (!config) {
@@ -80,6 +86,10 @@ export async function sendSlackNotification(payload: SlackNotifyPayload) {
 }
 
 export async function sendSlackDirectMessage(userSlackId: string, payload: Omit<SlackNotifyPayload, "channel">) {
+  if (DEMO_MODE) {
+    return { ok: true as const, skipped: true as const, reason: "デモモードでは Slack DM を送信しません。" };
+  }
+
   const config = getSlackConfig();
 
   if (!config) {

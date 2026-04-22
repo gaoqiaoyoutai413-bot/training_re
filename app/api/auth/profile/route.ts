@@ -1,8 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
+import { DEMO_MODE, DEMO_PROFILE } from "@/lib/demo-mode";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
+  if (DEMO_MODE) {
+    return NextResponse.json({ profile: DEMO_PROFILE });
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

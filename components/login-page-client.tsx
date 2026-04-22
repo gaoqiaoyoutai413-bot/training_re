@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/auth-provider";
+import { DEMO_MODE } from "@/lib/demo-mode";
 
 export function LoginPageClient({ nextPath }: { nextPath: string | null }) {
   const { error, isLoading, profile, signInWithGoogle } = useAuth();
@@ -9,9 +10,13 @@ export function LoginPageClient({ nextPath }: { nextPath: string | null }) {
     <div className="flex min-h-screen items-center justify-center bg-[var(--sand)] px-6">
       <div className="panel w-full max-w-xl rounded-[34px] p-8 md:p-10">
         <div className="eyebrow text-xs text-slate-500">Tech-Quest</div>
-        <h1 className="mt-2 text-3xl font-semibold text-[var(--navy)]">Google Workspaceでログイン</h1>
+        <h1 className="mt-2 text-3xl font-semibold text-[var(--navy)]">
+          {DEMO_MODE ? "デモモードで公開中" : "Google Workspaceでログイン"}
+        </h1>
         <p className="mt-4 text-sm leading-7 text-slate-600">
-          社内アカウントでログインすると、受講生・メンター・管理者のロールに応じた画面へアクセスできます。
+          {DEMO_MODE
+            ? "就活向けの表示では認証を無効化し、アプリ内のユーザー情報をテストデータに置き換えています。"
+            : "社内アカウントでログインすると、受講生・メンター・管理者のロールに応じた画面へアクセスできます。"}
         </p>
         {nextPath ? (
           <div className="mt-5 rounded-[24px] bg-white/80 p-4 text-sm text-slate-600">
@@ -34,7 +39,7 @@ export function LoginPageClient({ nextPath }: { nextPath: string | null }) {
           }}
           type="button"
         >
-          {isLoading ? "確認中..." : "Googleでログイン"}
+          {DEMO_MODE ? "ホームを開く" : isLoading ? "確認中..." : "Googleでログイン"}
         </button>
       </div>
     </div>

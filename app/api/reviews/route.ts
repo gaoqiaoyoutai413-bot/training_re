@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { exportSubmissionToDrive } from "@/lib/google-drive-archive";
 import { getSlackIdByEmail } from "@/lib/member-directory";
 import { getAuthorizedProfile } from "@/lib/server-auth";
@@ -145,7 +146,7 @@ export async function POST(request: Request) {
       }
     }
 
-    if (result === "passed" && submission.drive_export_status !== "exported" && profile?.name) {
+    if (!DEMO_MODE && result === "passed" && submission.drive_export_status !== "exported" && profile?.name) {
       try {
         const exportResult = await exportSubmissionToDrive({
           submissionId,

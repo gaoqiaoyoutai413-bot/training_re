@@ -1,3 +1,4 @@
+import { sanitizeTextForDemo, sanitizeUrlForDemo } from "@/lib/demo-anonymizer";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   KnowledgeEntry,
@@ -42,7 +43,11 @@ interface SubmissionFileRow {
 }
 
 function normalizeArrayValue(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  return Array.isArray(value)
+    ? value
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => sanitizeTextForDemo(item))
+    : [];
 }
 
 function mapKnowledgeRow(row: KnowledgeRow): KnowledgeEntry {
@@ -56,9 +61,9 @@ function mapKnowledgeRow(row: KnowledgeRow): KnowledgeEntry {
     taskTitle: task?.title ?? null,
     title: row.title,
     author: "匿名",
-    summary: row.summary,
+    summary: sanitizeTextForDemo(row.summary),
     highlights: normalizeArrayValue(row.highlights_json),
-    sourceCodeUrl: submission?.source_code_url ?? null,
+    sourceCodeUrl: sanitizeUrlForDemo(submission?.source_code_url ?? null) || null,
     publishedAt: row.published_at,
   };
 }
@@ -221,10 +226,10 @@ export async function getKnowledgeEntriesByTaskCode(taskCode: string): Promise<K
       title: base.title,
       summary: base.summary,
       highlights: base.highlights,
-      readme: submission?.business_value_text ?? "",
-      mentorComment: review?.comment ?? null,
+      readme: sanitizeTextForDemo(submission?.business_value_text ?? ""),
+      mentorComment: review?.comment ? sanitizeTextForDemo(review.comment) : null,
       mentorResult: review?.result ?? null,
-      sourceCodeUrl: submission?.source_code_url ?? null,
+      sourceCodeUrl: sanitizeUrlForDemo(submission?.source_code_url ?? null) || null,
       publishedAt: row.published_at ?? null,
       images: imageMap.get(row.submission_id) ?? [],
     };

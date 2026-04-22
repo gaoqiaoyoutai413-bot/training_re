@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useAuth } from "@/components/auth-provider";
+import { DEMO_MODE } from "@/lib/demo-mode";
 
 type ExportState = {
   requirements?: string | null;
@@ -19,6 +20,11 @@ export function GoogleDocsExportCard() {
   const runExport = (target: "requirements" | "design" | "brief") => {
     if (!session?.access_token) {
       setError("ログイン情報を確認できません。");
+      return;
+    }
+
+    if (DEMO_MODE) {
+      setError("デモモードでは Google ドキュメント出力を停止しています。");
       return;
     }
 
@@ -54,11 +60,16 @@ export function GoogleDocsExportCard() {
       <p className="mt-2 text-sm leading-6 text-slate-600">
         リポジトリ内の整理済み Markdown をもとに、見出しと箇条書きを整えた Google ドキュメントを Google Drive 上へ生成します。
       </p>
+      {DEMO_MODE ? (
+        <div className="mt-4 rounded-[20px] bg-white/80 p-4 text-sm leading-6 text-slate-600">
+          就活用デモでは外部の Google Workspace 連携を停止しています。
+        </div>
+      ) : null}
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <button
           className="rounded-[20px] bg-[var(--navy)] px-5 py-4 text-left text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
-          disabled={isPending}
+          disabled={DEMO_MODE || isPending}
           onClick={() => runExport("requirements")}
           type="button"
         >
@@ -67,7 +78,7 @@ export function GoogleDocsExportCard() {
         </button>
         <button
           className="rounded-[20px] border border-black/10 px-5 py-4 text-left text-sm font-medium text-slate-700 transition hover:bg-white disabled:opacity-60"
-          disabled={isPending}
+          disabled={DEMO_MODE || isPending}
           onClick={() => runExport("design")}
           type="button"
         >
@@ -76,7 +87,7 @@ export function GoogleDocsExportCard() {
         </button>
         <button
           className="rounded-[20px] border border-black/10 px-5 py-4 text-left text-sm font-medium text-slate-700 transition hover:bg-white disabled:opacity-60"
-          disabled={isPending}
+          disabled={DEMO_MODE || isPending}
           onClick={() => runExport("brief")}
           type="button"
         >

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
+import { createDemoSession, DEMO_MODE, DEMO_PROFILE } from "@/lib/demo-mode";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/types/domain";
 
@@ -52,16 +53,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const pathnameRef = useRef(pathname);
   const lastSyncedUserIdRef = useRef<string | null>(null);
-  const [isLoading, setIsLoading] = useState(Boolean(supabase));
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<AuthProfile | null>(null);
-  const [error, setError] = useState(supabase ? "" : "Supabase 接続情報が不足しています。");
+  const [isLoading, setIsLoading] = useState(DEMO_MODE ? false : Boolean(supabase));
+  const [session, setSession] = useState<Session | null>(DEMO_MODE ? createDemoSession() : null);
+  const [profile, setProfile] = useState<AuthProfile | null>(DEMO_MODE ? DEMO_PROFILE : null);
+  const [error, setError] = useState(DEMO_MODE ? "" : supabase ? "" : "Supabase 接続情報が不足しています。");
 
   useEffect(() => {
     pathnameRef.current = pathname;
   }, [pathname]);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setSession(createDemoSession());
+      setProfile(DEMO_PROFILE);
+      setError("");
+      setIsLoading(false);
+
+      if (pathname === "/login" || pathname === "/auth/callback") {
+        router.replace("/");
+      }
+
+      return;
+    }
+
     if (!supabase) {
       return;
     }
@@ -162,6 +176,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       error,
       signInWithGoogle: async (nextPath = "/") => {
+        if (DEMO_MODE) {
+          router.replace(nextPath);
+          return;
+        }
+
         const supabase = createBrowserSupabaseClient();
         if (!supabase) {
           setError("Supabase 接続情報が不足しています。");
@@ -183,6 +202,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       },
       signOut: async () => {
+        if (DEMO_MODE) {
+          router.replace("/");
+          return;
+        }
+
         const supabase = createBrowserSupabaseClient();
         if (!supabase) {
           return;

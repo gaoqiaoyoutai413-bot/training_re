@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BookOpen, ClipboardCheck, FileText, FolderKanban, Home, ListChecks, Send, UserCog, Users, type LucideIcon } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/domain";
 
@@ -83,19 +84,25 @@ export function AppShell({
           </nav>
 
           <div className="mt-8 rounded-[28px] bg-white p-4 text-sm text-slate-800 ring-1 ring-black/5">
-            <div className="eyebrow text-xs">ログイン中</div>
+            <div className="eyebrow text-xs">{DEMO_MODE ? "デモ表示" : "ログイン中"}</div>
             <p className="mt-2 font-medium">{profile?.name ?? "未ログイン"}</p>
             <p className="mt-1 text-xs text-slate-600">{profile?.email}</p>
             <p className="mt-1 text-xs text-slate-600">ロール: {profile?.role ?? "未設定"}</p>
-            <button
-              className="mt-4 rounded-full bg-[var(--navy)] px-4 py-2 text-xs font-medium text-white transition hover:opacity-90"
-              onClick={() => {
-                void signOut();
-              }}
-              type="button"
-            >
-              ログアウト
-            </button>
+            {DEMO_MODE ? (
+              <p className="mt-4 text-xs leading-5 text-slate-600">
+                就活用のデモモードです。認証は無効化され、ユーザー情報はテスト表示に置き換えています。
+              </p>
+            ) : (
+              <button
+                className="mt-4 rounded-full bg-[var(--navy)] px-4 py-2 text-xs font-medium text-white transition hover:opacity-90"
+                onClick={() => {
+                  void signOut();
+                }}
+                type="button"
+              >
+                ログアウト
+              </button>
+            )}
           </div>
         </aside>
 

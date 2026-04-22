@@ -1,7 +1,42 @@
+import { DEMO_MODE, DEMO_PROFILE } from "@/lib/demo-mode";
 import type { UserRole } from "@/types/domain";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function getAuthorizedProfile(request: Request, allowedRoles: UserRole[]) {
+  if (DEMO_MODE) {
+    const supabase = createServerSupabaseClient();
+
+    if (supabase) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, role")
+        .order("created_at", { ascending: true });
+
+      const orderedRoles: UserRole[] = ["admin", "mentor", "student"];
+      const matchedProfile = orderedRoles
+        .filter((role) => allowedRoles.includes(role) || role === "admin")
+        .flatMap((role) => (profiles ?? []).filter((profile) => profile.role === role))
+        [0];
+
+      if (matchedProfile?.id) {
+        return {
+          error: null,
+          status: 200 as const,
+          profile: {
+            ...DEMO_PROFILE,
+            id: matchedProfile.id,
+          },
+        };
+      }
+    }
+
+    return {
+      error: null,
+      status: 200 as const,
+      profile: DEMO_PROFILE,
+    };
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

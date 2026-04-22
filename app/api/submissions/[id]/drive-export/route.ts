@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { exportSubmissionToDrive } from "@/lib/google-drive-archive";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 import { sendDriveExportFailedSlackNotification } from "@/lib/slack-notify";
@@ -12,6 +13,10 @@ export async function POST(
 
   if (authorized.error || !authorized.profile) {
     return NextResponse.json({ message: authorized.error ?? "認証に失敗しました。" }, { status: authorized.status });
+  }
+
+  if (DEMO_MODE) {
+    return NextResponse.json({ message: "デモモードでは Google Drive 退避を停止しています。" }, { status: 200 });
   }
 
   const supabase = createServerSupabaseClient();

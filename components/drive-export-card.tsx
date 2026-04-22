@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useAuth } from "@/components/auth-provider";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import type { Submission } from "@/types/domain";
 
 export function DriveExportCard({ submission }: { submission: Submission }) {
@@ -25,6 +26,11 @@ export function DriveExportCard({ submission }: { submission: Submission }) {
       <h3 className="mt-2 text-lg font-semibold text-[var(--navy)]">長期保管ステータス</h3>
 
       <div className="mt-4 grid gap-3">
+        {DEMO_MODE ? (
+          <div className="rounded-[20px] bg-white/80 p-4 text-sm leading-6 text-slate-600">
+            デモモードでは外部 Drive 連携を停止しています。就活用の表示ではフォルダリンクも非表示です。
+          </div>
+        ) : null}
         <div className="rounded-[20px] bg-white/80 p-4">
           <div className="text-xs text-slate-500">退避状態</div>
           <div className="mt-1 text-base font-semibold text-[var(--navy)]">{submission.driveExportStatus ?? "未実行"}</div>
@@ -37,7 +43,7 @@ export function DriveExportCard({ submission }: { submission: Submission }) {
           </div>
         ) : null}
 
-        {folderUrl ? (
+        {!DEMO_MODE && folderUrl ? (
           <a
             className="rounded-[20px] bg-white/80 p-4 text-sm leading-6 text-[var(--accent-ink)] underline-offset-4 hover:underline"
             href={folderUrl}
@@ -59,7 +65,7 @@ export function DriveExportCard({ submission }: { submission: Submission }) {
         <div className="mt-4">
           <button
             className="rounded-full bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={isPending || !session?.access_token || submission.status !== "passed"}
+            disabled={DEMO_MODE || isPending || !session?.access_token || submission.status !== "passed"}
             onClick={() => {
               setMessage("");
               setError("");
@@ -88,7 +94,7 @@ export function DriveExportCard({ submission }: { submission: Submission }) {
             {isPending ? "再実行中..." : "Drive 退避を再実行"}
           </button>
           <p className="mt-2 text-xs leading-5 text-slate-500">
-            admin のみ再実行できます。合格済み提出のみ対象です。
+            {DEMO_MODE ? "デモモードでは再実行できません。" : "admin のみ再実行できます。合格済み提出のみ対象です。"}
           </p>
         </div>
       ) : null}

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { exportMarkdownDocToGoogleDocs } from "@/lib/google-docs-export";
 import { getAuthorizedProfile } from "@/lib/server-auth";
 
@@ -14,6 +15,13 @@ export async function POST(request: Request) {
 
   if (target !== "requirements" && target !== "design" && target !== "brief") {
     return NextResponse.json({ message: "出力対象が不正です。" }, { status: 400 });
+  }
+
+  if (DEMO_MODE) {
+    return NextResponse.json({
+      message: "デモモードでは Google ドキュメント出力を停止しています。",
+      webViewLink: null,
+    });
   }
 
   try {

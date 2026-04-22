@@ -1,3 +1,8 @@
+import {
+  anonymizeName,
+  sanitizeTextForDemo,
+  sanitizeUrlForDemo,
+} from "@/lib/demo-anonymizer";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   AiReviewRecord,
@@ -26,6 +31,8 @@ interface SubmissionBaseRow {
 interface ProfileRow {
   id: string;
   name: string | null;
+  email?: string | null;
+  role?: "student" | "mentor" | "admin";
   assigned_mentor_id?: string | null;
 }
 
@@ -201,7 +208,7 @@ async function fetchProfiles(ids: string[]) {
 
   const primaryResult = await supabase
     .from("profiles")
-    .select("id, name, assigned_mentor_id")
+    .select("id, name, email, role, assigned_mentor_id")
     .in("id", uniqueIds);
   let data: ProfileRow[] | null = primaryResult.data as ProfileRow[] | null;
   let error = primaryResult.error;
@@ -209,7 +216,7 @@ async function fetchProfiles(ids: string[]) {
   if (error) {
     const fallbackResult = await supabase
       .from("profiles")
-      .select("id, name")
+      .select("id, name, email, role")
       .in("id", uniqueIds);
     data = (fallbackResult.data ?? []) as ProfileRow[];
     error = fallbackResult.error;
@@ -274,20 +281,35 @@ async function assembleSubmissions(baseRows: SubmissionBaseRow[]) {
     const assignedMentor = assignedMentorId ? mentorMap.get(assignedMentorId) : null;
     const task = taskMap.get(row.task_id);
     const aiReview = latestAiReviewMap.get(row.id);
+    const textPeople = [learnerProfile, assignedMentor].filter((person): person is ProfileRow => Boolean(person));
 
     return {
       id: row.id,
       taskCode: task?.task_code ?? "UNKNOWN",
       taskTitle: task?.title ?? null,
       userId: row.user_id,
-      userName: learnerProfile?.name ?? "未設定",
+      userName: learnerProfile
+        ? anonymizeName({
+            id: learnerProfile.id,
+            name: learnerProfile.name,
+            email: learnerProfile.email ?? null,
+            role: learnerProfile.role,
+          })
+        : "未設定",
       batchCode: null,
       submittedAt: row.submitted_at,
       status: row.status,
-      sourceCodeUrl: row.source_code_url,
-      businessValueText: row.business_value_text,
+      sourceCodeUrl: sanitizeUrlForDemo(row.source_code_url),
+      businessValueText: sanitizeTextForDemo(row.business_value_text, textPeople),
       assignedMentorId,
-      assignedMentorName: assignedMentor?.name ?? null,
+      assignedMentorName: assignedMentor
+        ? anonymizeName({
+            id: assignedMentor.id,
+            name: assignedMentor.name,
+            email: assignedMentor.email ?? null,
+            role: assignedMentor.role,
+          })
+        : null,
       aiSummary: aiReview?.summary ?? "AIレビュー未実行",
       driveFolderId: row.drive_folder_id,
       driveExportStatus: row.drive_export_status,
@@ -394,10 +416,41 @@ export async function getSubmissionDetail(submissionId: string): Promise<Submiss
   let mentorReview: MentorReviewRecord | null = null;
   if (mentorReviewResult.data) {
     const reviewerMap = await fetchProfiles([mentorReviewResult.data.reviewer_id]);
+    const reviewer = reviewerMap.get(mentorReviewResult.data.reviewer_id);
     mentorReview = mapMentorReviewRow(
       submissionId,
-      mentorReviewResult.data as MentorReviewRow,
-      reviewerMap.get(mentorReviewResult.data.reviewer_id)?.name ?? null,
+      {
+        ...(mentorReviewResult.data as MentorReviewRow),
+        comment: sanitizeTextForDemo((mentorReviewResult.data as MentorReviewRow).comment, [
+          ...(submission.userId && submission.userName
+            ? [
+                {
+                  id: submission.userId,
+                  name: submission.userName,
+                  role: "student" as const,
+                },
+              ]
+            : []),
+          ...(reviewer
+            ? [
+                {
+                  id: reviewer.id,
+                  name: reviewer.name,
+                  email: reviewer.email ?? null,
+                  role: reviewer.role,
+                },
+              ]
+            : []),
+        ]),
+      },
+      reviewer
+        ? anonymizeName({
+            id: reviewer.id,
+            name: reviewer.name,
+            email: reviewer.email ?? null,
+            role: reviewer.role,
+          })
+        : null,
     );
   }
 
